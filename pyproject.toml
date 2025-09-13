@@ -1,13 +1,16 @@
 [project]
 name = "biased"
-version = "0.1.0"
+version = "0.1.2.dev1"
 description = "Various reusable components, helpers, and utilities which I would like to use in any Python project"
 readme = "README.md"
 authors = [
     { name = "Dmitry Tatarkin", email = "tatarkin@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pydantic>=2",
+    "ulid-py>=1.1.0",
+]
 
 [project.scripts]
 biased = "biased:main"
