@@ -1,4 +1,4 @@
-from enum import StrEnum, auto
+from enum import StrEnum, auto, unique
 
 from django.db.models import Q, Value
 from pydantic import TypeAdapter, ValidationError
@@ -7,6 +7,7 @@ from biased.django.filters.input_filter import CommaSeparatedInputFilter
 from biased.types import UlidStr
 
 
+@unique
 class ValueType(StrEnum):
     none = auto()
     int = auto()

@@ -1,10 +1,11 @@
 import logging
-from enum import StrEnum, auto
+from enum import StrEnum, auto, unique
 
 from biased.dtos.base import BaseDto
 from biased.types import LogLevel
 
 
+@unique
 class LogFormatter(StrEnum):
     json = auto()
     human = auto()
