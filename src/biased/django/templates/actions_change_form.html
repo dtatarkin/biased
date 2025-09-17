@@ -13,7 +13,10 @@
 
 {% block object-tools-items %}
     {{ block.super }}
-    {% include "admin_extra_buttons/includes/change_form_buttons.html" %}
+    {# Workaround to support admin_extra_buttons #}
+    {% if adminform.model_admin.get_changeform_buttons %}
+        {% include "admin_extra_buttons/includes/change_form_buttons.html" %}
+    {% endif %}
 {% endblock %}
 
 {% block pretitle %}

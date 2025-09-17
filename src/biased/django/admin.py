@@ -156,7 +156,9 @@ class ReadOnlyInlineMixin(InlineModelAdmin):
         return False
 
 
-class ChangeFormActionMixin:
+class ChangeFormActionMixin(ModelAdmin):
+    change_form_template = "actions_change_form.html"
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
         actions = self.get_actions(request)
