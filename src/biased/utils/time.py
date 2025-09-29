@@ -11,6 +11,10 @@ def build_today(tz: tzinfo = UTC) -> date:
     return build_now(tz=tz).date()
 
 
+def build_yesterday(tz: tzinfo = UTC) -> date:
+    return build_today(tz=tz) - timedelta(days=1)
+
+
 def build_current_month(tz: tzinfo = UTC) -> CalendarMonth:
     today = build_today(tz=tz)
     return CalendarMonth(year=today.year, month=today.month, day=1)
