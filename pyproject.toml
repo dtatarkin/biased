@@ -1,6 +1,6 @@
 [project]
 name = "biased"
-version = "0.1.2.dev3"
+version = "0.1.2.dev4"
 description = "Various reusable components, helpers, and utilities which I would like to use in any Python project"
 readme = "README.md"
 authors = [

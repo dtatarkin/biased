@@ -14,6 +14,10 @@ from pydantic_core import Url
 
 from biased.utils.aba_routing_number import validate_aba_routing_number
 
+
+class Empty: ...
+
+
 AbaRoutingNumber = Annotated[
     str,
     StringConstraints(
