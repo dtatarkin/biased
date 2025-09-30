@@ -1,6 +1,6 @@
 [project]
 name = "biased"
-version = "0.1.2.dev5"
+version = "0.1.2.dev6"
 description = "Various reusable components, helpers, and utilities which I would like to use in any Python project"
 readme = "README.md"
 authors = [
@@ -9,11 +9,21 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2",
+    "python-dateutil>=2.9.0.post0",
+    "structlog>=25.4.0",
     "ulid-py>=1.1.0",
 ]
 
-[project.scripts]
-biased = "biased:main"
+[project.optional-dependencies]
+django = [
+    "django>=5.2.6",
+]
+ninja = [
+    "django-ninja>=1.4.3",
+]
+django-redis = [
+    "django-redis>=6.0.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.8.16,<0.9.0"]

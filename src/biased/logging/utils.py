@@ -1,6 +1,6 @@
 import json
 
-from biased.utils.default_json_encoder import StructlogJsonEncoder
+from biased.structlog.structlog_json_encoder import StructlogJsonEncoder
 
 
 def structlog_json_serializer(*args, **kwargs) -> str:

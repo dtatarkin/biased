@@ -5,7 +5,6 @@ from json import JSONEncoder
 from uuid import UUID
 
 from pydantic import AnyUrl, BaseModel
-from structlog.processors import _json_fallback_handler
 from ulid import ULID
 
 
@@ -70,9 +69,3 @@ class DefaultJsonEncoder(JSONEncoder):
         return super().default(o)
 
 
-class StructlogJsonEncoder(DefaultJsonEncoder):
-    def default(self, o):
-        try:
-            return super().default(o)
-        except TypeError:
-            return _json_fallback_handler(o)
