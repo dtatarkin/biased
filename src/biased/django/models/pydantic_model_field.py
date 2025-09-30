@@ -4,7 +4,7 @@ from django.db.models import JSONField
 from pydantic import BaseModel
 
 from biased.django.forms.pydantic_model_form_field import PydanticModelFormField
-from biased.django.utils.default_json_encoder import DefaultJsonEncoder
+from biased.utils.default_json_encoder import DefaultJsonEncoder
 
 
 class PydanticModelField(JSONField):

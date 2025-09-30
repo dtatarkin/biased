@@ -4,7 +4,7 @@ from typing import Any
 from ninja.renderers import JSONRenderer
 from ninja.responses import NinjaJSONEncoder
 
-from biased.django.utils.default_json_encoder import DefaultJsonEncoder
+from biased.utils.default_json_encoder import DefaultJsonEncoder
 
 
 class BiasedNinjaJsonEncoder(NinjaJSONEncoder):
