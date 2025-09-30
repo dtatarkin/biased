@@ -41,12 +41,7 @@ def _duration_iso_string(duration: timedelta):
 class DefaultJsonEncoder(JSONEncoder):
     def default(self, o):
         if isinstance(o, datetime):
-            r = o.isoformat()
-            if o.microsecond:
-                r = r[:23] + r[26:]
-            if r.endswith("+00:00"):
-                r = r.removesuffix("+00:00") + "Z"
-            return r
+            return o.isoformat().replace("+00:00", "Z")
         if isinstance(o, date):
             return o.isoformat()
         if isinstance(o, time):
@@ -67,5 +62,3 @@ class DefaultJsonEncoder(JSONEncoder):
         if isinstance(o, bytes):
             return o.decode()
         return super().default(o)
-
-

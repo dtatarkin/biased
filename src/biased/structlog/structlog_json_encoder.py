@@ -1,5 +1,6 @@
-from biased.utils.default_json_encoder import DefaultJsonEncoder
 from structlog.processors import _json_fallback_handler
+
+from biased.utils.default_json_encoder import DefaultJsonEncoder
 
 
 class StructlogJsonEncoder(DefaultJsonEncoder):
