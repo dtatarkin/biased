@@ -22,9 +22,10 @@ wheels = [
 
 [[package]]
 name = "biased"
-version = "0.1.2.dev7"
+version = "0.1.2.dev8"
 source = { editable = "." }
 dependencies = [
+    { name = "injector" },
     { name = "pydantic" },
     { name = "python-dateutil" },
     { name = "structlog" },
@@ -47,6 +48,7 @@ requires-dist = [
     { name = "django", marker = "extra == 'django'", specifier = ">=5.2.6" },
     { name = "django-ninja", marker = "extra == 'ninja'", specifier = ">=1.4.3" },
     { name = "django-redis", marker = "extra == 'django-redis'", specifier = ">=6.0.0" },
+    { name = "injector", specifier = ">=0.22.0" },
     { name = "pydantic", specifier = ">=2" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "structlog", specifier = ">=25.4.0" },
@@ -92,6 +94,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/08/53/dbcfa1e528e0d6c39947092625b2c89274b5d88f14d357cee53c4d6dbbd4/django_redis-6.0.0.tar.gz", hash = "sha256:2d9cb12a20424a4c4dde082c6122f486628bae2d9c2bee4c0126a4de7fda00dd", size = 56904, upload-time = "2025-06-17T18:15:46.376Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/79/055dfcc508cfe9f439d9f453741188d633efa9eab90fc78a67b0ab50b137/django_redis-6.0.0-py3-none-any.whl", hash = "sha256:20bf0063a8abee567eb5f77f375143c32810c8700c0674ced34737f8de4e36c0", size = 33687, upload-time = "2025-06-17T18:15:34.165Z" },
+]
+
+[[package]]
+name = "injector"
+version = "0.22.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/f6/3a74e4b983b92eebb77b2f27ee526aa7eaf0e62a5913847d59361b4bae5f/injector-0.22.0.tar.gz", hash = "sha256:79b2d4a0874c75d3aa735f11c5b32b89d9542711ca07071161882c5e9cc15ed6", size = 86166, upload-time = "2024-07-07T23:02:23.275Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3f/37/37fee65c78ae3f9675e6190bfd12304e5d8d99564f0ec91716bf2bfbbb5f/injector-0.22.0-py2.py3-none-any.whl", hash = "sha256:74379ccef3b893bc7d0b7d504c255b5160c5a55e97dc7bdcc73cb33cc7dce3a1", size = 20461, upload-time = "2024-07-07T23:02:21.103Z" },
 ]
 
 [[package]]

@@ -1,6 +1,6 @@
 [project]
 name = "biased"
-version = "0.1.2.dev7"
+version = "0.1.2.dev8"
 description = "Various reusable components, helpers, and utilities which I would like to use in any Python project"
 readme = "README.md"
 authors = [
@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "injector>=0.22.0",
     "pydantic>=2",
     "python-dateutil>=2.9.0.post0",
     "structlog>=25.4.0",
