@@ -7,6 +7,7 @@ from biased.django.forms.pydantic_model_form_field import PydanticModelFormField
 from biased.utils.default_json_encoder import DefaultJsonEncoder
 
 
+# Consider to use [django-pydantic-field](https://github.com/surenkov/django-pydantic-field) instead
 class PydanticModelField(JSONField):
     default_error_messages = {
         "invalid": "Value must be valid JSON.",

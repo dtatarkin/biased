@@ -6,6 +6,7 @@ from django.forms.fields import InvalidJSONInput
 from pydantic import BaseModel
 
 
+# Consider to use [django-pydantic-field](https://github.com/surenkov/django-pydantic-field) instead
 class PydanticModelFormField(JSONField):
     default_error_messages = {
         "invalid": "Enter a valid JSON.",
