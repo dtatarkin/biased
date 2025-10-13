@@ -36,6 +36,9 @@ dependencies = [
 django = [
     { name = "django" },
 ]
+django-jsonform = [
+    { name = "django-jsonform" },
+]
 django-redis = [
     { name = "django-redis" },
 ]
@@ -46,6 +49,7 @@ ninja = [
 [package.metadata]
 requires-dist = [
     { name = "django", marker = "extra == 'django'", specifier = ">=5.2.6" },
+    { name = "django-jsonform", marker = "extra == 'django-jsonform'", specifier = ">=2.23.2" },
     { name = "django-ninja", marker = "extra == 'ninja'", specifier = ">=1.4.3" },
     { name = "django-redis", marker = "extra == 'django-redis'", specifier = ">=6.0.0" },
     { name = "injector", specifier = ">=0.22.0" },
@@ -54,7 +58,7 @@ requires-dist = [
     { name = "structlog", specifier = ">=25.4.0" },
     { name = "ulid-py", specifier = ">=1.1.0" },
 ]
-provides-extras = ["django", "ninja", "django-redis"]
+provides-extras = ["django", "ninja", "django-redis", "django-jsonform"]
 
 [[package]]
 name = "django"
@@ -68,6 +72,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/4c/8c/2a21594337250a171d45dda926caa96309d5136becd1f48017247f9cdea0/django-5.2.6.tar.gz", hash = "sha256:da5e00372763193d73cecbf71084a3848458cecf4cee36b9a1e8d318d114a87b", size = 10858861, upload-time = "2025-09-03T13:04:03.23Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f5/af/6593f6d21404e842007b40fdeb81e73c20b6649b82d020bb0801b270174c/django-5.2.6-py3-none-any.whl", hash = "sha256:60549579b1174a304b77e24a93d8d9fafe6b6c03ac16311f3e25918ea5a20058", size = 8303111, upload-time = "2025-09-03T13:03:47.808Z" },
+]
+
+[[package]]
+name = "django-jsonform"
+version = "2.23.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9b/a8/83c57acbc153b86615be279cee5a194ce1163b578f29a9f6d658f267785e/django_jsonform-2.23.2.tar.gz", hash = "sha256:6fa2ba7c082be51d738e6c66e35075a3cb9ebc2f941e3a477c988900a7fe3269", size = 108182, upload-time = "2025-01-29T22:31:34.093Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3a/8e/8766f4bc535917ccbc6b3dcb57caf82210a6bacd613c3d9dbaec81018935/django_jsonform-2.23.2-py3-none-any.whl", hash = "sha256:1b7f94c5a2bd22c844e035a9940a9c8586f7b8fc3346ef2a6a13ba608e0059d7", size = 109148, upload-time = "2025-01-29T22:31:31.186Z" },
 ]
 
 [[package]]

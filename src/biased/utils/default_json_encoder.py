@@ -53,7 +53,7 @@ class DefaultJsonEncoder(JSONEncoder):
             return r
         if isinstance(o, timedelta):
             return _duration_iso_string(o)
-        if isinstance(o, (Decimal, UUID, ULID, AnyUrl)):
+        if isinstance(o, Decimal | UUID | ULID | AnyUrl):
             return str(o)
         if isinstance(o, BaseModel):
             return o.model_dump()
