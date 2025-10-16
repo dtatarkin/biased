@@ -122,11 +122,15 @@ def html_image_tag(short_description: str, attributes: dict[str, Any] | None = N
 
 
 def url_link(short_description: str, content: str = "-", target: str = "_self"):
-    def wrapper(func: Callable[[ModelAdmin, Model], dict[str, str]]):
+    def wrapper(func: Callable[[ModelAdmin, Model], dict[str, str] | None]):
         def field_func(self, obj):
-            params = dict(content=content, target=target)
-            params.update(func(self, obj))
-            return format_html('<a href="{url}" target="{target}">{content}</a>', **params)
+            result = func(self, obj)
+            if result is None:
+                return content
+            else:
+                params = dict(content=content, target=target)
+                params.update(func(self, obj))
+                return format_html('<a href="{url}" target="{target}">{content}</a>', **params)
 
         field_func.short_description = short_description
         return field_func

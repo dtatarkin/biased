@@ -1,6 +1,9 @@
 default:
   @just --list
 
+shell:
+    uv venv --allow-existing 2>&1 | tail -n 1 | sed "s/Activate with: //"
+
 bump-dev:
   uv version --bump dev
 
