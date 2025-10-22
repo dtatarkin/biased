@@ -22,7 +22,7 @@ wheels = [
 
 [[package]]
 name = "biased"
-version = "0.1.2.dev10"
+version = "0.1.2.dev11"
 source = { editable = "." }
 dependencies = [
     { name = "injector" },

@@ -12,6 +12,7 @@ from pydantic import AfterValidator, AnyUrl, BaseModel, BeforeValidator, PlainSe
 from pydantic.json_schema import Examples, SkipJsonSchema
 from pydantic_core import Url
 
+from biased.consts import ULID_PATTERN
 from biased.utils.aba_routing_number import validate_aba_routing_number
 
 
@@ -121,7 +122,7 @@ UlidStr = Annotated[
         to_upper=True,
         min_length=26,
         max_length=26,
-        pattern=r"^0[0-9A-HJKMNP-TV-Z]{25}$",
+        pattern=ULID_PATTERN,
     ),
     AfterValidator(lambda x: ulid.parse(x).str),
     # This Examples annotation leads to "😱 Could not render Parameters, see the console." in Swagger
