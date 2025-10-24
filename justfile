@@ -7,6 +7,12 @@ shell:
 bump-dev:
   uv version --bump dev
 
+build:
+  uv build
+
+publish:
+  dotenv --file pypi.env run uv publish dist/biased-*
+
 system-info:
   @echo "This is an {{arch()}} machine".
 
