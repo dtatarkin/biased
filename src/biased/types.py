@@ -65,9 +65,13 @@ NonNegativeMoneyAmount = Annotated[MoneyAmount, annotated_types.Ge(0)]
 
 ItemsPerPageLimit = Annotated[int, annotated_types.Ge(0), annotated_types.Le(100)]
 
-AsciiStr = Annotated[str, StringConstraints(strict=True, pattern=r"^[ -~]*$")]
+AsciiStrConstraints = StringConstraints(strict=True, pattern=r"^[ -~]*$")
 
-AlphanumStr = Annotated[str, StringConstraints(strict=True, pattern=r"^[a-zA-Z0-9]+$")]
+AsciiStr = Annotated[str, AsciiStrConstraints]
+
+AlphanumStrConstraints = StringConstraints(strict=True, pattern=r"^[a-zA-Z0-9]+$")
+
+AlphanumStr = Annotated[str, AlphanumStrConstraints]
 
 JsonPrimitiveTypes = (
     str
@@ -132,11 +136,10 @@ UlidStr = Annotated[
     # WithJsonSchema({'type': 'string', 'example': ulid.new().str})
 ]
 
-NotEmptyString = Annotated[
-    str,
-    StringConstraints(
-        strict=True,
-        strip_whitespace=True,
-        min_length=1,
-    ),
-]
+NotEmptyStringConstraints = StringConstraints(
+    strict=True,
+    strip_whitespace=True,
+    min_length=1,
+)
+
+NotEmptyString = Annotated[str, NotEmptyStringConstraints]
