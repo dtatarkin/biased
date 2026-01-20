@@ -1,6 +1,6 @@
 [project]
 name = "biased"
-version = "0.1.2.dev12"
+version = "0.1.2.dev13"
 description = "Various reusable components, helpers, and utilities which I would like to use in any Python project"
 readme = "README.md"
 authors = [
@@ -35,5 +35,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pytest>=9.0.2",
+    "python-dotenv[cli]>=1.2.1",
     "rust-just>=1.43.0",
 ]
