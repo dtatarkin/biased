@@ -40,9 +40,12 @@ class EntityFilter(CommaSeparatedInputFilter):
     def value_to_filter(self, value: str) -> Q:
         value_type, parsed_value = _parse_value(value=value)
         if value_type == ValueType.int:
+            assert isinstance(parsed_value, int)  # nosec B101
             return self.int_value_to_filter(value=parsed_value)
         if value_type == ValueType.ulid:
+            assert isinstance(parsed_value, str)  # nosec B101
             return self.ulid_value_to_filter(value=parsed_value)
         if value_type == ValueType.str:
+            assert isinstance(parsed_value, str)  # nosec B101
             return self.str_value_to_filter(value=parsed_value)
         raise NotImplementedError(f"{value_type} is not supported")

@@ -54,6 +54,7 @@ lint = [
     "pre-commit",
     "pyright",
     "ruff",
+    "types-python-dateutil",
 ]
 
 
@@ -62,3 +63,14 @@ skips = ["**/test_*.py"]
 
 [tool.mypy]
 packages = ["biased"]
+
+[[tool.mypy.overrides]]
+module = [
+    "multiselectfield.*",
+    "jsoneditor.*",
+    "pydantic_settings.*",
+    "django_redis.*",
+    "ninja.*",
+    "admin_form_action.*",
+]
+ignore_missing_imports = true

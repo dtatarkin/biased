@@ -6,7 +6,7 @@ from django.urls.resolvers import RoutePattern
 
 
 class UrlArgsContext:
-    def __init__(self, *args: Sequence[tuple[str, dict[str, Any]]]) -> None:
+    def __init__(self, *args: tuple[Sequence[str], dict[str, Any]]) -> None:
         self._urls: list[str] = [""]
         self._args = args
 
@@ -28,7 +28,7 @@ class UrlArgsContext:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._urls.pop()
 
-    def keys(self):
+    def keys(self) -> set[str]:
         keys: set[str] = set()
         for prefixes, params in self._args:
             for prefix in prefixes:
@@ -53,9 +53,10 @@ def _iter_url_patterns(
             raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")
 
 
-def _iter_route_patterns(url_patterns: Iterable[RoutePattern | URLPattern]) -> Iterable[tuple[RoutePattern, ...]]:
+def _iter_route_patterns(url_patterns: Iterable[RoutePattern | URLPattern]) -> Iterable[RoutePattern]:
     for url_pattern in url_patterns:
         if isinstance(url_pattern, URLPattern):
+            assert isinstance(url_pattern.pattern, RoutePattern)  # nosec B101
             yield url_pattern.pattern
         elif isinstance(url_pattern, RoutePattern):
             yield url_pattern

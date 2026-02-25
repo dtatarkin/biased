@@ -8,12 +8,12 @@ class DeletedAtQuerySet(models.QuerySet):
         return self.filter(deleted_at__isnull=True)
 
 
-class DeletedAtManager(models.Manager.from_queryset(DeletedAtQuerySet)):
+class DeletedAtManager(models.Manager.from_queryset(DeletedAtQuerySet)):  # type: ignore[misc]
     pass
 
 
 class DeletedAtMixin(models.Model):
-    deleted_at = models.DateTimeField(null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)  # type: ignore[var-annotated]
 
     objects = DeletedAtManager()
 

@@ -36,9 +36,9 @@ def validate_aws_waf_regex_patterns(
 
     for regex_pattern, url in iter_regex_patterns(url_patterns):
         for url_template, url_params in normalize(regex_pattern):
-            url_params = set(url_params)
+            url_params_set = set(url_params)
             with context(url=url):
-                remaining_params = url_params - context.keys()
+                remaining_params = url_params_set - context.keys()
                 if not remaining_params:
                     url_example = "/" + url_template % context
                     if search_aws_waf_pattern(url_example=url_example) is None:

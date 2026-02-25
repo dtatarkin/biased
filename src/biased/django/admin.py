@@ -45,7 +45,7 @@ def admin_change_link(short_description: str, empty_description: str = "-"):
                 return empty_description
             return admin_change_html_link(instance=related_obj)
 
-        field_func.short_description = short_description
+        field_func.short_description = short_description  # type: ignore[attr-defined]
         return field_func
 
     return wrapper
@@ -63,7 +63,7 @@ def id_admin_change_link(
                 app_label=app_label, model_name=model_name, object_id=object_id, id_slug=id_slug
             )
 
-        field_func.short_description = short_description
+        field_func.short_description = short_description  # type: ignore[attr-defined]
         return field_func
 
     return wrapper
@@ -93,7 +93,7 @@ def admin_query_params_list_link(
                 model_type=model_type, title=title, query_kwargs=query_params, target=target
             )
 
-        field_func.short_description = short_description
+        field_func.short_description = short_description  # type: ignore[attr-defined]
         return field_func
 
     return wrapper
@@ -103,7 +103,7 @@ def _build_html_image_tag(url: str, attributes: dict[str, Any] | None = None) ->
     if attributes:
         attributes_html = mark_safe(" ".join(f'{attr}="{value}"' for attr, value in attributes.items()))  # nosec B308:blacklist, B703:django_mark_safe
     else:
-        attributes_html = ""
+        attributes_html = mark_safe("")  # nosec B308:blacklist, B703:django_mark_safe
     return format_html('<img src="{url}" {attributes_html}/>', url=url, attributes_html=attributes_html)
 
 
@@ -115,7 +115,7 @@ def html_image_tag(short_description: str, attributes: dict[str, Any] | None = N
                 return empty_description
             return _build_html_image_tag(url=image_url, attributes=attributes)
 
-        field_func.short_description = short_description
+        field_func.short_description = short_description  # type: ignore[attr-defined]
         return field_func
 
     return wrapper
@@ -132,7 +132,7 @@ def url_link(short_description: str, content: str = "-", target: str = "_self"):
                 params.update(func(self, obj))
                 return format_html('<a href="{url}" target="{target}">{content}</a>', **params)
 
-        field_func.short_description = short_description
+        field_func.short_description = short_description  # type: ignore[attr-defined]
         return field_func
 
     return wrapper

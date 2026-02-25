@@ -10,4 +10,4 @@ def enum_to_choices(enum: type[Enum]) -> Iterable[tuple[str, str]]:
 
 def choices_to_text_choices(enum_name: str, choices: Iterable[tuple[str, str]]) -> TextChoices:
     attrs = {value: (value, label) for value, label in choices}
-    return TextChoices(enum_name, attrs)
+    return TextChoices(enum_name, attrs)  # type: ignore[call-overload]

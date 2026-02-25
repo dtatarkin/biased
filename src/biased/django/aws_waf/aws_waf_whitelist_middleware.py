@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 
 from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 from django.conf import settings
@@ -9,7 +9,7 @@ from django.http import HttpRequest, HttpResponse
 from biased.django.aws_waf.aws_waf_regex_pattern import AwsWafRegexPatternSet
 
 
-class AwsWafWhitelistMiddleware(ABC, Callable[[HttpRequest], HttpResponse]):
+class AwsWafWhitelistMiddleware(ABC):
     async_capable = True
     sync_capable = False
     aws_waf_regex_pattern_sets: Sequence[AwsWafRegexPatternSet] = tuple()

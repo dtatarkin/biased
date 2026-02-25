@@ -1,14 +1,9 @@
-from typing import TypeVar
-
 from admin_form_action import Decorator, form_action
 from django import forms
 from django.contrib.admin import ModelAdmin
 
-FormT = TypeVar("FormT", bound=forms.Form)
-ModelAdminT = TypeVar("ModelAdminT", bound=ModelAdmin)
 
-
-def jsonform_action[FormT: forms.Form](
+def jsonform_action[FormT: forms.Form, ModelAdminT: ModelAdmin](
     form_class: type[FormT],
     *,
     template: str | None = None,
