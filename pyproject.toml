@@ -42,6 +42,23 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.2",
-    "rust-just>=1.43.0",
+    "pytest",
+    "rust-just",
+    "python-dotenv",
 ]
+
+lint = [
+    "bandit",
+    "django-stubs[compatible-mypy]",
+    "mypy",
+    "pre-commit",
+    "pyright",
+    "ruff",
+]
+
+
+[tool.bandit.assert_used]
+skips = ["**/test_*.py"]
+
+[tool.mypy]
+packages = ["biased"]
