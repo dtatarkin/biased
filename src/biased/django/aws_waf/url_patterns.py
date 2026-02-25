@@ -2,7 +2,7 @@ from collections.abc import Iterable, Sequence
 from typing import Any
 
 from django.urls import URLPattern, URLResolver
-from django.urls.resolvers import RoutePattern
+from django.urls.resolvers import RegexPattern, RoutePattern
 
 
 class UrlArgsContext:
@@ -53,10 +53,10 @@ def _iter_url_patterns(
             raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")
 
 
-def _iter_route_patterns(url_patterns: Iterable[RoutePattern | URLPattern]) -> Iterable[RoutePattern]:
+def _iter_route_patterns(url_patterns: Iterable[RoutePattern | URLPattern]) -> Iterable[RoutePattern | RegexPattern]:
     for url_pattern in url_patterns:
         if isinstance(url_pattern, URLPattern):
-            assert isinstance(url_pattern.pattern, RoutePattern)  # nosec B101
+            assert isinstance(url_pattern.pattern, (RoutePattern | RegexPattern))  # nosec B101
             yield url_pattern.pattern
         elif isinstance(url_pattern, RoutePattern):
             yield url_pattern
@@ -64,15 +64,15 @@ def _iter_route_patterns(url_patterns: Iterable[RoutePattern | URLPattern]) -> I
             raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")
 
 
-def _route_pattern_to_regex_pattern(route_pattern: RoutePattern) -> str:
+def _route_pattern_to_regex_pattern(route_pattern: RoutePattern | RegexPattern) -> str:
     return route_pattern.regex.pattern.removeprefix("^").replace("/", r"\/")
 
 
-def _route_patterns_to_regex_pattern(route_patterns: Iterable[RoutePattern]) -> str:
+def _route_patterns_to_regex_pattern(route_patterns: Iterable[RoutePattern | RegexPattern]) -> str:
     return "^" + "".join(map(_route_pattern_to_regex_pattern, route_patterns))
 
 
-def _route_patterns_to_str(route_patterns: Iterable[RoutePattern]) -> str:
+def _route_patterns_to_str(route_patterns: Iterable[RoutePattern | RegexPattern]) -> str:
     return "".join(map(str, route_patterns))
 
 
