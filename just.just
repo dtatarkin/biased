@@ -18,3 +18,11 @@ fzf:
 [group("just")]
 format-justfiles:
     just --fmt --unstable
+
+[group("just")]
+system-info:
+  @echo "This is an {{arch()}} machine".
+
+[group("just")]
+executable:
+  @echo The executable is at: {{just_executable()}}

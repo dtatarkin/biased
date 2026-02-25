@@ -8,12 +8,12 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "injector>=0.22.0",
+    "injector",
     "pydantic>=2",
-    "python-dateutil>=2.9.0.post0",
-    "structlog>=25.4.0",
-    "ulid-py>=1.1.0",
-    "python-dotenv[cli]>=1.2.1",
+    "python-dateutil",
+    "structlog",
+    "ulid-py",
+    "python-dotenv[cli]",
 ]
 
 [project.scripts]
@@ -21,16 +21,19 @@ dotenv-run = "biased.scripts.dotenv_run:main"
 
 [project.optional-dependencies]
 django = [
-    "django>=5.2.6",
+    "django",
 ]
 ninja = [
-    "django-ninja>=1.4.3",
+    "django-ninja",
 ]
 django-redis = [
-    "django-redis>=6.0.0",
+    "django-redis",
 ]
 django-jsonform = [
-    "django-jsonform>=2.23.2",
+    "django-jsonform",
+]
+temporal = [
+    "temporalio",
 ]
 
 [build-system]
