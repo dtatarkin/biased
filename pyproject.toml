@@ -13,7 +13,11 @@ dependencies = [
     "python-dateutil>=2.9.0.post0",
     "structlog>=25.4.0",
     "ulid-py>=1.1.0",
+    "python-dotenv[cli]>=1.2.1",
 ]
+
+[project.scripts]
+dotenv-run = "biased.scripts.dotenv_run:main"
 
 [project.optional-dependencies]
 django = [
@@ -36,6 +40,5 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
-    "python-dotenv[cli]>=1.2.1",
     "rust-just>=1.43.0",
 ]

@@ -1,19 +1,19 @@
 [group("django")]
 django-shell *args:
-    pdm run python manage.py shell {{ args }}
+    just manage shell {{ args }}
 
 [group("django")]
 dbshell *args:
-    pdm run python manage.py dbshell {{ args }}
+    just manage dbshell {{ args }}
 
 [group("django")]
 makemigrations *args:
-    pdm run python manage.py makemigrations {{ args }}
+    just manage makemigrations {{ args }}
 
 [group("django")]
 createsuperuser *args:
-    pdm run python manage.py createsuperuser {{ args }}
+    just manage createsuperuser {{ args }}
 
 [group("django")]
 showurls *args:
-    python manage.py show_urls {{ args }}
+    just manage show_urls {{ args }}
