@@ -5,7 +5,7 @@ from biased.types import UlidStr
 
 
 def build_ulid_str() -> UlidStr:
-    return ulid.new().str
+    return ulid.monotonic.new().str
 
 
 def validate_ulid_str(value: str) -> UlidStr:
