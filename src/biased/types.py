@@ -7,7 +7,7 @@ from typing import Annotated, Any
 from uuid import UUID
 
 import annotated_types
-import ulid
+from ulid import ULID
 from pydantic import AfterValidator, AnyUrl, BaseModel, BeforeValidator, PlainSerializer, StringConstraints, conint
 from pydantic.json_schema import Examples, SkipJsonSchema
 from pydantic_core import Url
@@ -128,12 +128,12 @@ UlidStr = Annotated[
         max_length=26,
         pattern=ULID_PATTERN,
     ),
-    AfterValidator(lambda x: ulid.parse(x).str),
+    AfterValidator(lambda x: str(ULID.from_str(x))),
     # This Examples annotation leads to "😱 Could not render Parameters, see the console." in Swagger
     # while rendering URL params, probably Django Ninja bug, uncomment when fixed
     # Examples(["01JXZEA2CWN5MF175CZATYGYWQ"]),
     # Works but leads to the same value everywhere
-    # WithJsonSchema({'type': 'string', 'example': ulid.new().str})
+    # WithJsonSchema({'type': 'string', 'example': str(ULID())})
 ]
 
 NotEmptyStringConstraints = StringConstraints(
@@ -143,3 +143,10 @@ NotEmptyStringConstraints = StringConstraints(
 )
 
 NotEmptyString = Annotated[str, NotEmptyStringConstraints]
+
+CsvTuple = Annotated[
+    tuple[str, ...],
+    BeforeValidator(
+        lambda v: tuple(p.strip() for p in v.split(",") if p.strip()) if isinstance(v, str) else v
+    ),
+]
