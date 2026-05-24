@@ -48,12 +48,16 @@ def _iter_url_patterns(
         if isinstance(url_pattern, URLPattern):
             yield base + (url_pattern,)
         elif isinstance(url_pattern, URLResolver):
-            yield from _iter_url_patterns(url_pattern.url_patterns, base + (url_pattern.pattern,))
+            yield from _iter_url_patterns(
+                url_pattern.url_patterns, base + (url_pattern.pattern,)
+            )
         else:
             raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")
 
 
-def _iter_route_patterns(url_patterns: Iterable[RoutePattern | URLPattern]) -> Iterable[RoutePattern | RegexPattern]:
+def _iter_route_patterns(
+    url_patterns: Iterable[RoutePattern | URLPattern],
+) -> Iterable[RoutePattern | RegexPattern]:
     for url_pattern in url_patterns:
         if isinstance(url_pattern, URLPattern):
             assert isinstance(url_pattern.pattern, (RoutePattern | RegexPattern))  # nosec B101
@@ -68,15 +72,21 @@ def _route_pattern_to_regex_pattern(route_pattern: RoutePattern | RegexPattern) 
     return route_pattern.regex.pattern.removeprefix("^").replace("/", r"\/")
 
 
-def _route_patterns_to_regex_pattern(route_patterns: Iterable[RoutePattern | RegexPattern]) -> str:
+def _route_patterns_to_regex_pattern(
+    route_patterns: Iterable[RoutePattern | RegexPattern],
+) -> str:
     return "^" + "".join(map(_route_pattern_to_regex_pattern, route_patterns))
 
 
-def _route_patterns_to_str(route_patterns: Iterable[RoutePattern | RegexPattern]) -> str:
+def _route_patterns_to_str(
+    route_patterns: Iterable[RoutePattern | RegexPattern],
+) -> str:
     return "".join(map(str, route_patterns))
 
 
-def iter_regex_patterns(url_patterns: Iterable[URLPattern | URLResolver]) -> Iterable[tuple[str, str]]:
+def iter_regex_patterns(
+    url_patterns: Iterable[URLPattern | URLResolver],
+) -> Iterable[tuple[str, str]]:
     for url_patterns_ in _iter_url_patterns(url_patterns):
         route_patterns = list(_iter_route_patterns(url_patterns=url_patterns_))
         yield (

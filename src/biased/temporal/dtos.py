@@ -22,4 +22,6 @@ class TemporalParams(BaseDto):
 
 
 class TemporalSettings(EnvFilePathsSettings, TemporalParams):
-    model_config = SettingsConfigDict(extra="ignore", env_prefix="TEMPORAL_", env_nested_delimiter="__")
+    model_config = SettingsConfigDict(
+        extra="ignore", env_prefix="TEMPORAL_", env_nested_delimiter="__"
+    )

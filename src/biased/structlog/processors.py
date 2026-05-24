@@ -17,6 +17,8 @@ def get_async_task_info() -> dict:
 
 
 class AsyncTaskInfoAdder:
-    def __call__(self, logger: logging.Logger, name: str, event_dict: EventDict) -> EventDict:
+    def __call__(
+        self, logger: logging.Logger, name: str, event_dict: EventDict
+    ) -> EventDict:
         event_dict.update(get_async_task_info())
         return event_dict

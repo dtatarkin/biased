@@ -33,7 +33,9 @@ class FixedLengthCharField(CharField):
 class FixedLengthDigitsField(FixedLengthCharField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.validators.append(RegexValidator(regex=r"^[0-9]+$", message="Only digit characters allowed."))
+        self.validators.append(
+            RegexValidator(regex=r"^[0-9]+$", message="Only digit characters allowed.")
+        )
 
 
 class DefaultUlidField(FixedLengthCharField):

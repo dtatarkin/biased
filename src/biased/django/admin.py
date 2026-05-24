@@ -12,7 +12,9 @@ from django.utils.safestring import mark_safe
 from biased.django.utils.reverse import reverse_querystring
 
 
-def _id_admin_change_url(app_label: str, model_name: str, object_id: str, id_slug: str | None = None) -> str:
+def _id_admin_change_url(
+    app_label: str, model_name: str, object_id: str, id_slug: str | None = None
+) -> str:
     if id_slug is None:
         url_name = f"admin:{app_label}_{model_name}_change"
     else:
@@ -24,7 +26,9 @@ def _id_admin_change_url(app_label: str, model_name: str, object_id: str, id_slu
 def admin_change_url(instance: Model):
     app_label = instance._meta.app_label  # pylint: disable=protected-access
     model_name = instance._meta.model.__name__.lower()  # pylint: disable=protected-access
-    return _id_admin_change_url(app_label=app_label, model_name=model_name, object_id=instance.pk)
+    return _id_admin_change_url(
+        app_label=app_label, model_name=model_name, object_id=instance.pk
+    )
 
 
 def admin_change_html_link(instance: Model):
@@ -32,8 +36,12 @@ def admin_change_html_link(instance: Model):
     return format_html('<a href="{}">{}</a>', url, instance)
 
 
-def _id_admin_change_html_link(app_label: str, model_name: str, object_id: str, id_slug: str | None = None) -> str:
-    url = _id_admin_change_url(app_label=app_label, model_name=model_name, object_id=object_id, id_slug=id_slug)
+def _id_admin_change_html_link(
+    app_label: str, model_name: str, object_id: str, id_slug: str | None = None
+) -> str:
+    url = _id_admin_change_url(
+        app_label=app_label, model_name=model_name, object_id=object_id, id_slug=id_slug
+    )
     return format_html('<a href="{}">{}</a>', url, object_id)
 
 
@@ -52,7 +60,11 @@ def admin_change_link(short_description: str, empty_description: str = "-"):
 
 
 def id_admin_change_link(
-    short_description: str, app_label: str, model_name: str, id_slug: str | None = None, empty_description: str = "-"
+    short_description: str,
+    app_label: str,
+    model_name: str,
+    id_slug: str | None = None,
+    empty_description: str = "-",
 ):
     def wrapper(func):
         def field_func(self, obj):
@@ -60,7 +72,10 @@ def id_admin_change_link(
             if object_id is None:
                 return empty_description
             return _id_admin_change_html_link(
-                app_label=app_label, model_name=model_name, object_id=object_id, id_slug=id_slug
+                app_label=app_label,
+                model_name=model_name,
+                object_id=object_id,
+                id_slug=id_slug,
             )
 
         field_func.short_description = short_description  # type: ignore[attr-defined]
@@ -70,7 +85,9 @@ def id_admin_change_link(
 
 
 def _admin_query_params_list_url(model_type: type[Model], query_kwargs: dict) -> str:
-    url_name = f"admin:{model_type._meta.app_label}_{model_type._meta.model_name}_changelist"
+    url_name = (
+        f"admin:{model_type._meta.app_label}_{model_type._meta.model_name}_changelist"
+    )
     return reverse_querystring(url_name, query_kwargs=query_kwargs)
 
 
@@ -78,11 +95,19 @@ def _admin_query_params_list_html_link(
     model_type: type[Model], title: str, query_kwargs: dict, target: str = "_self"
 ) -> str:
     url = _admin_query_params_list_url(model_type=model_type, query_kwargs=query_kwargs)
-    return format_html('<a href="{url}" target="{target}">{title}</a>', url=url, title=title, target=target)
+    return format_html(
+        '<a href="{url}" target="{target}">{title}</a>',
+        url=url,
+        title=title,
+        target=target,
+    )
 
 
 def admin_query_params_list_link(
-    short_description: str, model_type: type[Model], empty_description: str = "-", target: str = "_self"
+    short_description: str,
+    model_type: type[Model],
+    empty_description: str = "-",
+    target: str = "_self",
 ):
     def wrapper(func: Callable[[ModelAdmin, Model], tuple[str, dict]]):
         def field_func(self, obj):
@@ -90,7 +115,10 @@ def admin_query_params_list_link(
             if title is None:
                 return empty_description
             return _admin_query_params_list_html_link(
-                model_type=model_type, title=title, query_kwargs=query_params, target=target
+                model_type=model_type,
+                title=title,
+                query_kwargs=query_params,
+                target=target,
             )
 
         field_func.short_description = short_description  # type: ignore[attr-defined]
@@ -101,13 +129,21 @@ def admin_query_params_list_link(
 
 def _build_html_image_tag(url: str, attributes: dict[str, Any] | None = None) -> str:
     if attributes:
-        attributes_html = mark_safe(" ".join(f'{attr}="{value}"' for attr, value in attributes.items()))  # nosec B308:blacklist, B703:django_mark_safe
+        attributes_html = mark_safe(
+            " ".join(f'{attr}="{value}"' for attr, value in attributes.items())
+        )  # nosec B308:blacklist, B703:django_mark_safe
     else:
         attributes_html = mark_safe("")  # nosec B308:blacklist, B703:django_mark_safe
-    return format_html('<img src="{url}" {attributes_html}/>', url=url, attributes_html=attributes_html)
+    return format_html(
+        '<img src="{url}" {attributes_html}/>', url=url, attributes_html=attributes_html
+    )
 
 
-def html_image_tag(short_description: str, attributes: dict[str, Any] | None = None, empty_description: str = "-"):
+def html_image_tag(
+    short_description: str,
+    attributes: dict[str, Any] | None = None,
+    empty_description: str = "-",
+):
     def wrapper(func):
         def field_func(self, obj):
             image_url = func(self, obj)
@@ -130,7 +166,9 @@ def url_link(short_description: str, content: str = "-", target: str = "_self"):
             else:
                 params = dict(content=content, target=target)
                 params.update(func(self, obj))
-                return format_html('<a href="{url}" target="{target}">{content}</a>', **params)
+                return format_html(
+                    '<a href="{url}" target="{target}">{content}</a>', **params
+                )
 
         field_func.short_description = short_description  # type: ignore[attr-defined]
         return field_func
@@ -174,7 +212,9 @@ class ChangeFormActionMixin(ModelAdmin):
 
 
 class ExternalIdModelAdmin(ModelAdmin):
-    def external_id_change_view(self, request, object_id, form_url="", extra_context=None):
+    def external_id_change_view(
+        self, request, object_id, form_url="", extra_context=None
+    ):
         try:
             object_pk = str(self.model.objects.get(external_id=object_id).pk)
         except self.model.DoesNotExist:

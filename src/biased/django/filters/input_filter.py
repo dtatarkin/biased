@@ -12,9 +12,10 @@ from django.http import HttpRequest
 class InputFilter(SimpleListFilter):
     template = "admin/input_filter.html"
 
-    def lookups(self, request: HttpRequest, model_admin: ModelAdmin) -> tuple[tuple[()], ...]:  # type: ignore[override]
-        # Dummy, required to show the filter.
-        return ((),)
+    def lookups(
+        self, request: HttpRequest, model_admin: ModelAdmin
+    ) -> list[tuple[str, str]]:
+        return []
 
     def get_facet_counts(self, pk_attname: str, filtered_qs: QuerySet) -> dict:
         return {}
@@ -23,7 +24,10 @@ class InputFilter(SimpleListFilter):
         # Grab only the "all" option.
         all_choice = next(super().choices(changelist))
         all_choice["query_parts"] = (  # type: ignore[typeddict-unknown-key]
-            (k, v) for k, values in changelist.get_filters_params().items() for v in values if k != self.parameter_name
+            (k, v)
+            for k, values in changelist.get_filters_params().items()
+            for v in values
+            if k != self.parameter_name
         )
         yield all_choice
 

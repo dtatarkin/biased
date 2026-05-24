@@ -8,7 +8,15 @@ from uuid import UUID
 
 import annotated_types
 from ulid import ULID
-from pydantic import AfterValidator, AnyUrl, BaseModel, BeforeValidator, PlainSerializer, StringConstraints, conint
+from pydantic import (
+    AfterValidator,
+    AnyUrl,
+    BaseModel,
+    BeforeValidator,
+    PlainSerializer,
+    StringConstraints,
+    conint,
+)
 from pydantic.json_schema import Examples, SkipJsonSchema
 from pydantic_core import Url
 
@@ -99,7 +107,9 @@ JsonPrimitiveTypes = (
     | SkipJsonSchema[BaseModel]
     | SkipJsonSchema[AnyUrl]
 )
-type JsonSerializable = dict[str, JsonSerializable] | list[JsonSerializable] | JsonPrimitiveTypes
+type JsonSerializable = (
+    dict[str, JsonSerializable] | list[JsonSerializable] | JsonPrimitiveTypes
+)
 JsonSerializableDict = dict[str, JsonSerializable]
 FlatJsonSerializableDict = dict[str, JsonPrimitiveTypes]
 
@@ -110,7 +120,9 @@ def validate_log_level(v: int | str) -> int:
         try:
             return levels[v]
         except KeyError as e:
-            raise ValueError(f'Invalid log level "{v}", valid values are: {", ".join(levels.keys())}') from e
+            raise ValueError(
+                f'Invalid log level "{v}", valid values are: {", ".join(levels.keys())}'
+            ) from e
     if not isinstance(v, int):
         raise ValueError(f'Invalid log level "{v}", value must be an integer or string')
     return v
@@ -147,6 +159,10 @@ NotEmptyString = Annotated[str, NotEmptyStringConstraints]
 CsvTuple = Annotated[
     tuple[str, ...],
     BeforeValidator(
-        lambda v: tuple(p.strip() for p in v.split(",") if p.strip()) if isinstance(v, str) else v
+        lambda v: (
+            tuple(p.strip() for p in v.split(",") if p.strip())
+            if isinstance(v, str)
+            else v
+        )
     ),
 ]

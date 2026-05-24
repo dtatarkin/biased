@@ -25,4 +25,7 @@ class PydanticDjangoValidator:
         )
 
     def __eq__(self, other):
-        return isinstance(other, self.__class__) and self._dotted_path_to_type == other._dotted_path_to_type
+        return (
+            isinstance(other, self.__class__)
+            and self._dotted_path_to_type == other._dotted_path_to_type
+        )

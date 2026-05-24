@@ -72,5 +72,7 @@ module = [
     "django_redis.*",
     "ninja.*",
     "admin_form_action.*",
+    "temporalio",
+    "temporalio.*",
 ]
 ignore_missing_imports = true

@@ -42,7 +42,9 @@ def _get_logging_dict_config(params: LoggingParams) -> dict:
                 "foreign_pre_chain": foreign_pre_chain,
                 "processors": (
                     *processors,
-                    structlog.processors.JSONRenderer(serializer=structlog_json_serializer),
+                    structlog.processors.JSONRenderer(
+                        serializer=structlog_json_serializer
+                    ),
                 ),
             },
             LogFormatter.human.value: {

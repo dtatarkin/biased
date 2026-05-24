@@ -15,7 +15,9 @@ class PydanticModelFormField(JSONField):
 
     widget = Textarea
 
-    def __init__(self, pydantic_model: type[BaseModel], encoder=None, decoder=None, **kwargs):
+    def __init__(
+        self, pydantic_model: type[BaseModel], encoder=None, decoder=None, **kwargs
+    ):
         self.pydantic_model = pydantic_model
         super().__init__(encoder=encoder, decoder=decoder, **kwargs)
 

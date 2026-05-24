@@ -42,7 +42,9 @@ def validate_aws_waf_regex_patterns(
                 if not remaining_params:
                     url_example = "/" + url_template % context
                     if search_aws_waf_pattern(url_example=url_example) is None:
-                        raise ValueError(f"No AWS WAF pattern found for {url_template}, {regex_pattern}")
+                        raise ValueError(
+                            f"No AWS WAF pattern found for {url_template}, {regex_pattern}"
+                        )
                 else:
                     raise ValueError(
                         f"No example value for argument(s) "

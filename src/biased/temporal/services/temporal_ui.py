@@ -6,7 +6,9 @@ from biased.temporal.dtos import TemporalClientParams, TemporalParams
 
 class TemporalUi:
     @inject
-    def __init__(self, temporal_params: TemporalParams, client_params: TemporalClientParams):
+    def __init__(
+        self, temporal_params: TemporalParams, client_params: TemporalClientParams
+    ):
         self._temporal_params = temporal_params
         self._client_params = client_params
 

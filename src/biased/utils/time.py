@@ -50,7 +50,9 @@ def today_prev_month_last_day(tz: tzinfo = UTC) -> date:
     return prev_month_last_day(date=today)
 
 
-def date_to_inclusive_period(begin: date, end: date | None = None, tz: tzinfo = UTC) -> tuple[datetime, datetime]:
+def date_to_inclusive_period(
+    begin: date, end: date | None = None, tz: tzinfo = UTC
+) -> tuple[datetime, datetime]:
     if end is None:
         end = begin
     period_begin = date_to_period_begin(begin, tz=tz)
@@ -58,7 +60,9 @@ def date_to_inclusive_period(begin: date, end: date | None = None, tz: tzinfo = 
     return period_begin, period_end
 
 
-def date_to_exclusive_period(begin: date, end: date | None = None, tz: tzinfo = UTC) -> tuple[datetime, datetime]:
+def date_to_exclusive_period(
+    begin: date, end: date | None = None, tz: tzinfo = UTC
+) -> tuple[datetime, datetime]:
     if end is None:
         end = begin
     period_begin = date_to_period_begin(begin, tz=tz)
