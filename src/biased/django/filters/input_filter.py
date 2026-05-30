@@ -17,6 +17,11 @@ class InputFilter(SimpleListFilter):
     ) -> list[tuple[str, str]]:
         return []
 
+    def has_output(self) -> bool:
+        # Input filters render a free-text box, so they must always show
+        # even though they expose no lookup choices.
+        return True
+
     def get_facet_counts(self, pk_attname: str, filtered_qs: QuerySet) -> dict:
         return {}
 
