@@ -2,48 +2,56 @@ import? '.just'
 
 source_file := source_file()
 
-# List all available recipes
 [default]
+[doc("List all available recipes")]
 list: (just::list source_file)
 
-# Bootstrap a fresh clone (submodules, uv environment, pre-commit hooks)
+[doc("Bootstrap a fresh clone (submodules, uv environment, pre-commit hooks)")]
 init: git-submodule::update sync pre-commit::install
 
-# Synchronise the uv-managed virtual environment with pyproject.toml + uv.lock
+[doc("Synchronise the uv-managed virtual environment with pyproject.toml + uv.lock")]
 sync:
     uv sync
 
-# Run a command inside the uv-managed virtual environment
+[doc("Run a command inside the uv-managed virtual environment")]
 run *args:
     uv run {{ args }}
 
-# Create the uv virtual environment if absent and print the activation command
+[doc("Create the uv virtual environment if absent and print the activation command")]
 shell:
     uv venv --allow-existing 2>&1 | tail -n 1 | sed "s/Activate with: //"
 
-# Bump the dev release segment of the project version
+[doc("Bump the dev release segment of the project version")]
+[group("release")]
 bump-dev:
     uv version --bump dev
 
-# Build the sdist and wheel into dist/
+[doc("Build the sdist and wheel into dist/")]
+[group("release")]
 build:
     uv build
 
-# Publish the built distributions to PyPI (credentials from pypi.env)
+[doc("Publish the built distributions to PyPI (credentials from pypi.env)")]
+[group("release")]
 publish:
     uv run dotenv --file pypi.env run uv publish dist/biased-*
 
-# Run the bandit security linter over src and tests
+[doc("Run the bandit security linter over src and tests")]
+[group("qa")]
 bandit *args: (run "bandit" "--configfile" "pyproject.toml" args "--recursive" "src" "tests")
 
-# Run the mypy type checker
+[doc("Run the mypy type checker")]
+[group("qa")]
 mypy *args: (run "mypy" args)
 
-# Run the pyright type checker
+[doc("Run the pyright type checker")]
+[group("qa")]
 pyright *args: (run "pyright" args)
 
-# Type-check the project (mypy)
+[doc("Type-check the project (mypy)")]
+[group("qa")]
 typecheck: mypy
 
-# Run all linters: pre-commit hooks plus type checking
+[doc("Run all linters: pre-commit hooks plus type checking")]
+[group("qa")]
 lint: pre-commit::run typecheck
