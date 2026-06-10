@@ -34,6 +34,11 @@ repos:
         additional_dependencies: [ "bandit[toml]" ]
 
 
+  - repo: https://github.com/instrumentl/pre-commit-just
+    rev: v0.1
+    hooks:
+      - id: format-justfile
+
 exclude: |
   (?x)(
     tests/\.idea/
