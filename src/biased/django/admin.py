@@ -23,7 +23,7 @@ def _id_admin_change_url(
     return reverse(url_name, kwargs=dict(object_id=object_id))
 
 
-def admin_change_url(instance: Model):
+def admin_change_url(instance: Model) -> str:
     app_label = instance._meta.app_label  # pylint: disable=protected-access
     model_name = instance._meta.model.__name__.lower()  # pylint: disable=protected-access
     return _id_admin_change_url(
@@ -31,7 +31,7 @@ def admin_change_url(instance: Model):
     )
 
 
-def admin_change_html_link(instance: Model):
+def admin_change_html_link(instance: Model) -> str:
     url = admin_change_url(instance)
     return format_html('<a href="{}">{}</a>', url, instance)
 
@@ -45,9 +45,11 @@ def _id_admin_change_html_link(
     return format_html('<a href="{}">{}</a>', url, object_id)
 
 
-def admin_change_link(short_description: str, empty_description: str = "-"):
-    def wrapper(func):
-        def field_func(self, obj):
+def admin_change_link(
+    short_description: str, empty_description: str = "-"
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
+        def field_func(self: Any, obj: Any) -> Any:
             related_obj = func(self, obj)
             if related_obj is None:
                 return empty_description
@@ -65,9 +67,9 @@ def id_admin_change_link(
     model_name: str,
     id_slug: str | None = None,
     empty_description: str = "-",
-):
-    def wrapper(func):
-        def field_func(self, obj):
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
+        def field_func(self: Any, obj: Any) -> Any:
             object_id = func(self, obj)
             if object_id is None:
                 return empty_description
