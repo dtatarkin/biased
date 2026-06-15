@@ -1,6 +1,12 @@
 from datetime import UTC, date, datetime, timedelta, tzinfo
+from typing import NamedTuple
 
 from biased.types import CalendarMonth
+
+
+class DatePeriod(NamedTuple):
+    begin: datetime
+    end: datetime
 
 
 def build_now(tz: tzinfo = UTC) -> datetime:
@@ -52,19 +58,19 @@ def today_prev_month_last_day(tz: tzinfo = UTC) -> date:
 
 def date_to_inclusive_period(
     begin: date, end: date | None = None, tz: tzinfo = UTC
-) -> tuple[datetime, datetime]:
+) -> DatePeriod:
     if end is None:
         end = begin
     period_begin = date_to_period_begin(begin, tz=tz)
     period_end = date_to_period_end(end, tz=tz)
-    return period_begin, period_end
+    return DatePeriod(begin=period_begin, end=period_end)
 
 
 def date_to_exclusive_period(
     begin: date, end: date | None = None, tz: tzinfo = UTC
-) -> tuple[datetime, datetime]:
+) -> DatePeriod:
     if end is None:
         end = begin
     period_begin = date_to_period_begin(begin, tz=tz)
     period_end = date_to_period_begin(end + timedelta(days=1), tz=tz)
-    return period_begin, period_end
+    return DatePeriod(begin=period_begin, end=period_end)
