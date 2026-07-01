@@ -36,6 +36,10 @@ build:
 publish:
     uv run dotenv --file pypi.env run uv publish dist/biased-*
 
+[doc("Run the test suite with pytest")]
+[group("qa")]
+test *args: (run "pytest" args)
+
 [doc("Run the bandit security linter over src and tests")]
 [group("qa")]
 bandit *args: (run "bandit" "--configfile" "pyproject.toml" args "--recursive" "src" "tests")
