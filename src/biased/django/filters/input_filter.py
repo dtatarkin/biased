@@ -17,6 +17,12 @@ class InputFilter(SimpleListFilter):
     ) -> list[tuple[str, str]]:
         return []
 
+    def has_output(self) -> bool:
+        # An input filter has no discrete lookup choices, so the default
+        # ``len(lookup_choices) > 0`` would hide it. The text box must always be
+        # offered, so force the filter visible.
+        return True
+
     def get_facet_counts(self, pk_attname: str, filtered_qs: QuerySet) -> dict:
         return {}
 
