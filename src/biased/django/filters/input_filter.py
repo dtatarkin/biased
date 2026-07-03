@@ -57,6 +57,25 @@ class CommaSeparatedInputFilter(InputFilter, ABC):
         return None
 
 
+class IntFieldInputFilter(CommaSeparatedInputFilter):
+    """Filter an integer model field by a comma-separated list of ids.
+
+    Subclasses set ``field_name`` (the model field to match) alongside the
+    standard ``title`` and ``parameter_name``. A row matches if ``field_name``
+    equals any numeric token; a non-numeric token cannot be an id, so it matches
+    nothing. ``field_name`` may be a related lookup (e.g. ``account__id``).
+    """
+
+    field_name: str
+
+    def value_to_filter(self, value: str) -> Q:
+        if value.lstrip("-").isdigit():
+            return Q(**{self.field_name: int(value)})
+        # A non-numeric token cannot be an id; an empty ``__in`` is Django's
+        # backend-agnostic "match nothing" (short-circuited as an empty result).
+        return Q(**{f"{self.field_name}__in": []})
+
+
 class StrArrayInputFilter(InputFilter):
     query_name: str
 
