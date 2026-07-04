@@ -110,9 +110,9 @@ def admin_query_params_list_link(
     model_type: type[Model],
     empty_description: str = "-",
     target: str = "_self",
-):
-    def wrapper(func: Callable[[ModelAdmin, Model], tuple[str, dict]]):
-        def field_func(self, obj):
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
+        def field_func(self: Any, obj: Any) -> Any:
             title, query_params = func(self, obj)
             if title is None:
                 return empty_description
