@@ -18,7 +18,6 @@ wheels/
 # Environment variables
 *.env
 
-.claude
 
 # Local justfile overrides (see .just.example)
 .just
