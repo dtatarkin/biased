@@ -15,6 +15,11 @@ bump-dev:
 build:
     uv build
 
+# -c pins rootdir to this package; without it pytest ascends into the enclosing uv workspace
+[group("project")]
+test *args="tests":
+    just python-run pytest -c pyproject.toml {{ args }}
+
 [group("project")]
 python-run *args:
     @uv run {{ args }}
