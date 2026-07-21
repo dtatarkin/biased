@@ -36,9 +36,9 @@ build:
 publish:
     uv run dotenv --file pypi.env run uv publish dist/biased-*
 
-[doc("Run the test suite with pytest")]
+[doc("Run the test suite with pytest (-c pins rootdir here so pytest does not ascend into an enclosing uv workspace)")]
 [group("qa")]
-test *args: (run "pytest" args)
+test *args="tests": (run "pytest" "-c" "pyproject.toml" args)
 
 [doc("Run the bandit security linter over src and tests")]
 [group("qa")]

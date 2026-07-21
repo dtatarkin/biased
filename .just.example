@@ -1,4 +1,0 @@
-mod just          '../justfiles/just.just'
-mod git           '../justfiles/git.just'
-mod git-submodule '../justfiles/git-submodule.just'
-mod pre-commit    '../justfiles/pre-commit.just'
