@@ -2,7 +2,7 @@
 name = "biased"
 version = "0.2.0.dev1"
 description = "Various reusable components, helpers, and utilities which I would like to use in any Python project"
-readme = "README.md"
+readme = "AGENTS.md"
 authors = [
     { name = "Dmitry Tatarkin", email = "tatarkin@gmail.com" }
 ]
