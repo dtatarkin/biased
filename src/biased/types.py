@@ -118,7 +118,7 @@ def validate_log_level(v: int | str) -> int:
     if isinstance(v, str):
         levels = getLevelNamesMapping()
         try:
-            return levels[v]
+            return levels[v.upper()]
         except KeyError as e:
             raise ValueError(
                 f'Invalid log level "{v}", valid values are: {", ".join(levels.keys())}'
