@@ -19,5 +19,5 @@ wheels/
 *.env
 
 
-# Local justfile overrides (see .just.example)
+# Local justfile overrides
 .just
