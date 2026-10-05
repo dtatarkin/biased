@@ -14,6 +14,11 @@ class TestLoggingConfig:
         assert config.level == logging.INFO
         assert config.levels == {}
 
+    def test_colors_are_left_unset_by_default(self) -> None:
+        # Unset is a state of its own — the terminal decides — and not a
+        # spelling of "off".
+        assert LoggingConfig(_env_file=None).colors is None
+
     def test_binds_log_prefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("LOG_FORMATTER", "human")
         monkeypatch.setenv("LOG_LEVEL", "DEBUG")
