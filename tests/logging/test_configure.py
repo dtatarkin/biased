@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 
 import pytest
 
@@ -8,6 +9,14 @@ from biased.logging.configure import configure_logging
 from biased.logging.consts import HANDLER_NAME
 
 log = logging.getLogger("tests.biased.logging")
+
+# Stands for a credential a process holds in memory: it is a local of the
+# frame that fails and appears nowhere else — not in the exception's text, not
+# in the event's payload.
+_FRAME_LOCAL = "frame-local-credential"
+
+# Removed before looking for a value, which a colored rendering may split.
+_ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
 
 class TestApplied:
@@ -149,3 +158,43 @@ class TestRendering:
         record = json.loads(capsys.readouterr().err)
         assert record["amount"] == "1.50"
         assert record["at"] == "2026-09-06T12:00:00Z"
+
+
+def _fail_holding(credential: str) -> None:
+    raise RuntimeError("request failed")
+
+
+class TestFrameLocals:
+    @pytest.mark.parametrize("colors", [False, True])
+    def test_human_traceback_names_the_frame_and_not_what_it_holds(
+        self,
+        pristine_root_logger: logging.Logger,
+        capsys: pytest.CaptureFixture[str],
+        colors: bool,
+    ) -> None:
+        configure_logging(
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=colors)
+        )
+
+        try:
+            _fail_holding(_FRAME_LOCAL)
+        except RuntimeError:
+            log.exception("request_error")
+
+        err = _ANSI.sub("", capsys.readouterr().err)
+        assert "_fail_holding" in err
+        assert _FRAME_LOCAL not in err
+
+    def test_json_traceback_names_the_frame_and_not_what_it_holds(
+        self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))
+
+        try:
+            _fail_holding(_FRAME_LOCAL)
+        except RuntimeError:
+            log.exception("request_error")
+
+        err = capsys.readouterr().err
+        assert "_fail_holding" in err
+        assert _FRAME_LOCAL not in err
