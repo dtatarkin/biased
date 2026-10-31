@@ -7,7 +7,6 @@ from typing import Annotated, Any
 from uuid import UUID
 
 import annotated_types
-from ulid import ULID
 from pydantic import (
     AfterValidator,
     AnyUrl,
@@ -19,6 +18,7 @@ from pydantic import (
 )
 from pydantic.json_schema import Examples, SkipJsonSchema
 from pydantic_core import Url
+from ulid import ULID
 
 from biased.consts import ULID_PATTERN
 from biased.utils.aba_routing_number import validate_aba_routing_number
@@ -124,7 +124,8 @@ def validate_log_level(v: int | str) -> int:
                 f'Invalid log level "{v}", valid values are: {", ".join(levels.keys())}'
             ) from e
     if not isinstance(v, int):
-        raise ValueError(f'Invalid log level "{v}", value must be an integer or string')
+        # pydantic turns a ValueError into a ValidationError; a TypeError would escape it.
+        raise ValueError(f'Invalid log level "{v}", value must be an integer or string')  # noqa: TRY004
     return v
 
 

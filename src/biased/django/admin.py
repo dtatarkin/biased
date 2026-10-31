@@ -20,7 +20,7 @@ def _id_admin_change_url(
     else:
         url_name = f"admin:{app_label}_{model_name}_{id_slug}_change"
 
-    return reverse(url_name, kwargs=dict(object_id=object_id))
+    return reverse(url_name, kwargs={"object_id": object_id})
 
 
 def admin_change_url(instance: Model) -> str:
@@ -55,7 +55,8 @@ def admin_change_link(
                 return empty_description
             return admin_change_html_link(instance=related_obj)
 
-        field_func.short_description = short_description  # type: ignore[attr-defined]
+        # Django admin reads the column label off the function.
+        field_func.short_description = short_description  # type: ignore[attr-defined]  # ty: ignore[unresolved-attribute]
         return field_func
 
     return wrapper
@@ -80,7 +81,8 @@ def id_admin_change_link(
                 id_slug=id_slug,
             )
 
-        field_func.short_description = short_description  # type: ignore[attr-defined]
+        # Django admin reads the column label off the function.
+        field_func.short_description = short_description  # type: ignore[attr-defined]  # ty: ignore[unresolved-attribute]
         return field_func
 
     return wrapper
@@ -123,7 +125,8 @@ def admin_query_params_list_link(
                 target=target,
             )
 
-        field_func.short_description = short_description  # type: ignore[attr-defined]
+        # Django admin reads the column label off the function.
+        field_func.short_description = short_description  # type: ignore[attr-defined]  # ty: ignore[unresolved-attribute]
         return field_func
 
     return wrapper
@@ -131,7 +134,8 @@ def admin_query_params_list_link(
 
 def _build_html_image_tag(url: str, attributes: dict[str, Any] | None = None) -> str:
     if attributes:
-        attributes_html = mark_safe(
+        # The attributes are the admin author's literals, never request input.
+        attributes_html = mark_safe(  # noqa: S308
             " ".join(f'{attr}="{value}"' for attr, value in attributes.items())
         )  # nosec B308:blacklist, B703:django_mark_safe
     else:
@@ -153,7 +157,8 @@ def html_image_tag(
                 return empty_description
             return _build_html_image_tag(url=image_url, attributes=attributes)
 
-        field_func.short_description = short_description  # type: ignore[attr-defined]
+        # Django admin reads the column label off the function.
+        field_func.short_description = short_description  # type: ignore[attr-defined]  # ty: ignore[unresolved-attribute]
         return field_func
 
     return wrapper
@@ -166,13 +171,15 @@ def url_link(short_description: str, content: str = "-", target: str = "_self"):
             if result is None:
                 return content
             else:
-                params = dict(content=content, target=target)
-                params.update(func(self, obj))
+                params = {"content": content, "target": target}
+                # A second call: `result` above already ruled out None.
+                params.update(func(self, obj))  # ty: ignore[no-matching-overload]
                 return format_html(
                     '<a href="{url}" target="{target}">{content}</a>', **params
                 )
 
-        field_func.short_description = short_description  # type: ignore[attr-defined]
+        # Django admin reads the column label off the function.
+        field_func.short_description = short_description  # type: ignore[attr-defined]  # ty: ignore[unresolved-attribute]
         return field_func
 
     return wrapper
@@ -220,7 +227,8 @@ class ExternalIdModelAdmin(ModelAdmin):
         try:
             object_pk = str(self.model.objects.get(external_id=object_id).pk)
         except self.model.DoesNotExist:
-            return self._get_obj_does_not_exist_redirect(request, self.opts, object_id)
+            # A private ModelAdmin method the stubs omit.
+            return self._get_obj_does_not_exist_redirect(request, self.opts, object_id)  # ty: ignore[unresolved-attribute]
         return self.changeform_view(request, object_pk, form_url, extra_context)
 
     def get_urls(self):
@@ -228,7 +236,8 @@ class ExternalIdModelAdmin(ModelAdmin):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
 
-            wrapper.model_admin = self
+            # The same attribute Django's own ModelAdmin.get_urls sets on its wrapper.
+            wrapper.model_admin = self  # ty: ignore[unresolved-attribute]
             return update_wrapper(wrapper, view)
 
         urls = super().get_urls()

@@ -1,0 +1,7 @@
+# House values from the lint standard's markup topic.
+extends: default
+
+rules:
+  document-start: disable
+  line-length:
+    max: 120

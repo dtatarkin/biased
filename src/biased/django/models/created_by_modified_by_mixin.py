@@ -42,7 +42,8 @@ class CreatedByModifiedByMixin(models.Model):
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         current_actor = get_current_actor()
-        if self._state.adding and self.created_by_id is None:  # type: ignore[attr-defined]
+        # Django generates `created_by_id` from the foreign key.
+        if self._state.adding and self.created_by_id is None:  # type: ignore[attr-defined]  # ty: ignore[unresolved-attribute]
             self.created_by = current_actor
         self.modified_by = current_actor
         super().save(*args, **kwargs)

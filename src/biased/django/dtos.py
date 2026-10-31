@@ -7,5 +7,5 @@ class DjangoSettings(EnvFilePathsSettings):
     def django_dump(self) -> dict[str, Any]:
         return {
             field_name: getattr(self, field_name)
-            for field_name in type(self).model_fields.keys()
+            for field_name in type(self).model_fields
         }

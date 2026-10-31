@@ -23,7 +23,7 @@ def build_yesterday(tz: tzinfo = UTC) -> date:
 
 def build_current_month(tz: tzinfo = UTC) -> CalendarMonth:
     today = build_today(tz=tz)
-    return CalendarMonth(year=today.year, month=today.month, day=1)
+    return date(year=today.year, month=today.month, day=1)
 
 
 def build_now_utc_naive() -> datetime:

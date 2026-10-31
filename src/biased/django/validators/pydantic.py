@@ -21,7 +21,7 @@ class PydanticDjangoValidator:
         return (
             f"{self.__class__.__module__}.{self.__class__.__qualname__}",
             (),
-            dict(dotted_path_to_type=self._dotted_path_to_type),
+            {"dotted_path_to_type": self._dotted_path_to_type},
         )
 
     def __eq__(self, other):

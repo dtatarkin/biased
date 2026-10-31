@@ -1,8 +1,9 @@
 from datetime import datetime
 
+from pydantic import BaseModel
+
 from biased.pydantic.base64_pydantic_model import Base64PydanticModel
 from biased.utils.time import build_now
-from pydantic import BaseModel
 
 
 class Payload(BaseModel):

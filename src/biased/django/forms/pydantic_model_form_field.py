@@ -8,7 +8,8 @@ from pydantic import BaseModel
 
 # Consider to use [django-pydantic-field](https://github.com/surenkov/django-pydantic-field) instead
 class PydanticModelFormField(JSONField):
-    default_error_messages = {
+    # Django reads this through the MRO into a per-instance dict; it is never mutated.
+    default_error_messages = {  # noqa: RUF012
         "invalid": "Enter a valid JSON.",
         "invalid_schema": "Data has invalid schema. %(pydantic_error)s.",
     }
@@ -28,9 +29,9 @@ class PydanticModelFormField(JSONField):
             raise ValidationError(
                 self.error_messages["invalid_schema"],
                 code="invalid_schema",
-                params=dict(
-                    pydantic_error=str(e),
-                ),
+                params={
+                    "pydantic_error": str(e),
+                },
             ) from e
         return value
 

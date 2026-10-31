@@ -108,7 +108,7 @@ def get_logging_dict_config(params: LoggingParams) -> dict:
         if logger_name in loggers:
             loggers[logger_name]["level"] = level
         else:
-            loggers[logger_name] = dict(level=level)
+            loggers[logger_name] = {"level": level}
     return config
 
 

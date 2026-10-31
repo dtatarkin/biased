@@ -9,7 +9,7 @@ from django.utils.regex_helper import normalize
 from biased.django.aws_waf.url_patterns import UrlArgsContext, iter_regex_patterns
 
 
-class AwsWafRegexPatternSet(tuple[re.Pattern]):
+class AwsWafRegexPatternSet(tuple[re.Pattern, ...]):
     def __new__(cls, *patterns: str):
         if len(patterns) > 10:
             raise ValueError("AWS WAF Pattern Set can hold max 10 items")

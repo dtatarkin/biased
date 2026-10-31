@@ -13,9 +13,8 @@ class UrlArgsContext:
     def __getitem__(self, key):
         for prefixes, params in self._args:
             for prefix in prefixes:
-                if self._urls[-1].startswith(prefix):
-                    if key in params:
-                        return params[key]
+                if self._urls[-1].startswith(prefix) and key in params:
+                    return params[key]
         raise KeyError(f"'{key}' not found in context")
 
     def __call__(self, url: str):
@@ -41,7 +40,7 @@ def _iter_url_patterns(
     url_patterns: Iterable[URLPattern | URLResolver], base=None
 ) -> Iterable[tuple[URLPattern | RoutePattern, ...]]:
     if base is None:
-        base = tuple()
+        base = ()
     if not url_patterns:
         return
     for url_pattern in url_patterns:
@@ -52,7 +51,8 @@ def _iter_url_patterns(
                 url_pattern.url_patterns, base + (url_pattern.pattern,)
             )
         else:
-            raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")
+            # Released: a caller may catch this RuntimeError, so its type stays.
+            raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")  # noqa: TRY004
 
 
 def _iter_route_patterns(
@@ -60,12 +60,14 @@ def _iter_route_patterns(
 ) -> Iterable[RoutePattern | RegexPattern]:
     for url_pattern in url_patterns:
         if isinstance(url_pattern, URLPattern):
-            assert isinstance(url_pattern.pattern, (RoutePattern | RegexPattern))  # nosec B101
+            # Narrows for the type checker; a URLPattern holds no other pattern kind here.
+            assert isinstance(url_pattern.pattern, (RoutePattern | RegexPattern))  # nosec B101  # noqa: S101
             yield url_pattern.pattern
         elif isinstance(url_pattern, RoutePattern):
             yield url_pattern
         else:
-            raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")
+            # Released: a caller may catch this RuntimeError, so its type stays.
+            raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")  # noqa: TRY004
 
 
 def _route_pattern_to_regex_pattern(route_pattern: RoutePattern | RegexPattern) -> str:

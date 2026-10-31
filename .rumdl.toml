@@ -1,0 +1,8 @@
+# House values from the lint standard's markup topic.
+[MD013]
+line_length = 120
+tables = false
+code_blocks = false
+
+[MD041]
+enabled = false

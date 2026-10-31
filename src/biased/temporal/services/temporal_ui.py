@@ -14,7 +14,8 @@ class TemporalUi:
 
     def build_workflow_url(self, workflow_id: str) -> HttpUrl:
         base = self._temporal_params.ui_base_url
-        assert base.host is not None  # nosec B101:assert_used
+        # Narrows for the type checker: a validated HttpUrl always has a host.
+        assert base.host is not None  # nosec B101:assert_used  # noqa: S101
         return HttpUrl.build(
             scheme=base.scheme,
             host=base.host,

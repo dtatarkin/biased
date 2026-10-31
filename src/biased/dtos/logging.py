@@ -14,7 +14,8 @@ class LogFormatter(StrEnum):
 class LoggingParams(BaseDto):
     level: LogLevel = logging.INFO
     formatter: LogFormatter = LogFormatter.json
-    levels: dict[str, LogLevel] = {}
+    # A pydantic field, copied per instance: ruff cannot see BaseDto is a BaseModel.
+    levels: dict[str, LogLevel] = {}  # noqa: RUF012
     # ``None`` follows the terminal: colored when stderr is a TTY, plain when
     # piped or captured. Set it explicitly to force either.
     colors: bool | None = None

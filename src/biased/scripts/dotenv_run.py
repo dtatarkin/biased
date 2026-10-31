@@ -38,7 +38,8 @@ def main():
     if not cmd_args:
         parser.error("No command specified to execute.")
 
-    os.execvp(cmd_args[0], cmd_args)  # nosec B606:start_process_with_no_shell
+    # Replacing this process with the caller's own command is the script's purpose.
+    os.execvp(cmd_args[0], cmd_args)  # nosec B606:start_process_with_no_shell  # noqa: S606
 
 
 if __name__ == "__main__":

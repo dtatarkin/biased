@@ -1,0 +1,5 @@
+[default.extend-words]
+# The ninja JSON renderer module is deliberately named `json_renderrer.py`: it
+# is a released import path, so the name stays, and a file-name hit cannot be
+# rewritten by the fixer, so it would fail every run until allowed here.
+renderrer = "renderrer"

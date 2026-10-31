@@ -61,12 +61,12 @@ def start_workflow[ArgT: BaseDto, ResultT: BaseDto](
 
         log.info(
             "started_temporal_workflow",
-            extra=dict(
-                data=dict(
-                    workflow_name=workflow.get_workflow_name(),
-                    workflow_handle_id=workflow_handle.id,
-                )
-            ),
+            extra={
+                "data": {
+                    "workflow_name": workflow.get_workflow_name(),
+                    "workflow_handle_id": workflow_handle.id,
+                }
+            },
         )
         return workflow_handle
 

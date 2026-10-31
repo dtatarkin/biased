@@ -3,77 +3,68 @@ name = "biased"
 version = "0.2.0.dev2"
 description = "Various reusable components, helpers, and utilities which I would like to use in any Python project"
 readme = "AGENTS.md"
-authors = [
-    { name = "Dmitry Tatarkin", email = "tatarkin@gmail.com" }
-]
+authors = [{ name = "Dmitry Tatarkin", email = "tatarkin@gmail.com" }]
 requires-python = ">=3.12"
 dependencies = [
-    "injector",
-    "pydantic>=2",
-    "pydantic-settings>=2",
-    "python-dateutil",
-    "structlog",
-    "python-ulid>=3.0",
-    "python-dotenv[cli]",
+  "injector",
+  "pydantic>=2",
+  "pydantic-settings>=2",
+  "python-dateutil",
+  "structlog",
+  "python-ulid>=3.0",
+  "python-dotenv[cli]",
 ]
 
 [project.scripts]
 dotenv-run = "biased.scripts.dotenv_run:main"
 
 [project.optional-dependencies]
-django = [
-    "django",
-]
-ninja = [
-    "django-ninja",
-]
-django-redis = [
-    "django-redis",
-]
-django-jsonform = [
-    "django-jsonform",
-]
-temporal = [
-    "temporalio",
-]
+django = ["django"]
+ninja = ["django-ninja"]
+django-redis = ["django-redis"]
+django-jsonform = ["django-jsonform"]
+temporal = ["temporalio"]
 
 [build-system]
 requires = ["uv_build>=0.8.16,<0.9.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = [
-    "pytest",
-    "rust-just",
-    "python-dotenv",
-]
+dev = ["pytest", "rust-just", "python-dotenv"]
 
 lint = [
-    "bandit",
-    "django-stubs[compatible-mypy]",
-    "mypy",
-    "pre-commit",
-    "pyright",
-    "ruff",
-    "types-python-dateutil",
+  "bandit",
+  "django-stubs[compatible-mypy]",
+  "mypy",
+  "pre-commit",
+  "pyright",
+  "ruff",
+  "types-python-dateutil",
 ]
 
 
 [tool.bandit.assert_used]
 skips = ["**/test_*.py"]
 
+[tool.ruff.lint]
+extend-select = ["S"]
+ignore = ["S603", "S607"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S107"]
+
 [tool.mypy]
 packages = ["biased"]
 
 [[tool.mypy.overrides]]
 module = [
-    "multiselectfield.*",
-    "jsoneditor.*",
-    "pydantic_settings.*",
-    "django_redis.*",
-    "ninja.*",
-    "admin_form_action.*",
-    "temporalio",
-    "temporalio.*",
+  "multiselectfield.*",
+  "jsoneditor.*",
+  "pydantic_settings.*",
+  "django_redis.*",
+  "ninja.*",
+  "admin_form_action.*",
+  "temporalio",
+  "temporalio.*",
 ]
 ignore_missing_imports = true

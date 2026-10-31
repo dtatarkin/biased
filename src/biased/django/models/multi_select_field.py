@@ -1,4 +1,5 @@
-from multiselectfield import MultiSelectField
+# An optional integration no extra declares, so the import does not resolve here.
+from multiselectfield import MultiSelectField  # ty: ignore[unresolved-import]
 
 
 class BiasedMultiSelectField(MultiSelectField):

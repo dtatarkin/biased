@@ -29,7 +29,8 @@ class InputFilter(SimpleListFilter):
     def choices(self, changelist: ChangeList) -> Iterator:
         # Grab only the "all" option.
         all_choice = next(super().choices(changelist))
-        all_choice["query_parts"] = (  # type: ignore[typeddict-unknown-key]
+        # The input filter's template reads this key; the stubs' TypedDict omits it.
+        all_choice["query_parts"] = (  # type: ignore[typeddict-unknown-key]  # ty: ignore[invalid-key]
             (k, v)
             for k, values in changelist.get_filters_params().items()
             for v in values

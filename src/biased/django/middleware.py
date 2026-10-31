@@ -1,6 +1,6 @@
 from collections.abc import Callable
+from inspect import iscoroutinefunction, markcoroutinefunction
 
-from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 from django.http import HttpRequest, HttpResponse
 
 from biased.django.actor import actor
@@ -29,10 +29,12 @@ class CurrentActorMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         if self._is_async:
-            return self.__acall__(request)  # type: ignore[return-value]
+            # An awaitable: the async path's caller awaits it, the annotation is the sync one's.
+            return self.__acall__(request)  # type: ignore[return-value]  # ty: ignore[invalid-return-type]
         with actor(request.user):
             return self.get_response(request)
 
     async def __acall__(self, request: HttpRequest) -> HttpResponse:
         with actor(request.user):
-            return await self.get_response(request)  # type: ignore[misc]
+            # `_is_async` says get_response is the async one here.
+            return await self.get_response(request)  # type: ignore[misc]  # ty: ignore[invalid-await]

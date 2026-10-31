@@ -22,7 +22,9 @@ class BaseWorkflow[ArgT: BaseDto, ResultT: BaseDto](ABC):
     @classmethod
     def get_workflow_name(cls) -> str:
         workflow_definition = cls._get_workflow_definition()
-        assert workflow_definition.name is not None  # nosec B101:assert_used
+        # Narrows for the type checker: only a dynamic workflow has no name, and this
+        # method is called on named ones.
+        assert workflow_definition.name is not None  # nosec B101:assert_used  # noqa: S101
         return workflow_definition.name
 
     @classmethod

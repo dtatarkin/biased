@@ -1,5 +1,5 @@
-from ulid import ULID
 from pydantic import TypeAdapter
+from ulid import ULID
 
 from biased.types import UlidStr
 

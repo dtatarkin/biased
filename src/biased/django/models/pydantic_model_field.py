@@ -1,3 +1,5 @@
+from typing import Any
+
 import pydantic
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField
@@ -9,7 +11,8 @@ from biased.utils.default_json_encoder import DefaultJsonEncoder
 
 # Consider to use [django-pydantic-field](https://github.com/surenkov/django-pydantic-field) instead
 class PydanticModelField(JSONField):
-    default_error_messages = {
+    # Django reads this through the MRO into a per-instance dict; it is never mutated.
+    default_error_messages = {  # noqa: RUF012
         "invalid": "Value must be valid JSON.",
         "invalid_schema": "Data has invalid schema. %(pydantic_error)s",
     }
@@ -21,9 +24,9 @@ class PydanticModelField(JSONField):
             raise ValidationError(
                 self.error_messages["invalid_schema"],
                 code="invalid_schema",
-                params=dict(
-                    pydantic_error=str(e),
-                ),
+                params={
+                    "pydantic_error": str(e),
+                },
             ) from e
 
         return value
@@ -34,16 +37,15 @@ class PydanticModelField(JSONField):
         self._value_to_pydantic_model(value)
         super().validate(value, model_instance)
 
-    def formfield(self, **kwargs):
-        return super().formfield(
-            **{
-                "form_class": PydanticModelFormField,
-                "pydantic_model": self.pydantic_model,
-                "encoder": self.encoder,
-                "decoder": self.decoder,
-                **kwargs,
-            }
-        )
+    def formfield(self, **kwargs: Any) -> Any:
+        params: dict[str, Any] = {
+            "form_class": PydanticModelFormField,
+            "pydantic_model": self.pydantic_model,
+            "encoder": self.encoder,
+            "decoder": self.decoder,
+            **kwargs,
+        }
+        return super().formfield(**params)
 
     def pre_save(self, model_instance, add):
         value = super().pre_save(model_instance, add)

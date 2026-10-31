@@ -1,6 +1,7 @@
 import pytest
-from biased.django.actor import actor, get_current_actor
 from django.contrib.auth.models import AnonymousUser, User
+
+from biased.django.actor import actor, get_current_actor
 
 
 @pytest.fixture
@@ -31,9 +32,8 @@ def test_nested_innermost_wins(user, user2):
 
 
 def test_previous_binding_restored_on_exception(user):
-    with pytest.raises(RuntimeError):
-        with actor(user):
-            raise RuntimeError
+    with pytest.raises(RuntimeError), actor(user):
+        raise RuntimeError
     assert get_current_actor() is None
 
 

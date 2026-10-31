@@ -1,4 +1,5 @@
-from admin_form_action import Decorator, form_action
+# An optional integration no extra declares, so the import does not resolve here.
+from admin_form_action import Decorator, form_action  # ty: ignore[unresolved-import]
 from django import forms
 from django.contrib.admin import ModelAdmin
 

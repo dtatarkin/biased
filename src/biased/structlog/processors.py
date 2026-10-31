@@ -10,10 +10,10 @@ def get_async_task_info() -> dict:
     except RuntimeError:
         return {}
 
-    return dict(
-        async_task_name=task and task.get_name(),
-        async_task=id(task),
-    )
+    return {
+        "async_task_name": task and task.get_name(),
+        "async_task": id(task),
+    }
 
 
 class AsyncTaskInfoAdder:

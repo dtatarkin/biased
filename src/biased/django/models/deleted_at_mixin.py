@@ -8,7 +8,8 @@ class DeletedAtQuerySet(models.QuerySet):
         return self.filter(deleted_at__isnull=True)
 
 
-class DeletedAtManager(models.Manager.from_queryset(DeletedAtQuerySet)):  # type: ignore[misc]
+# `from_queryset` builds the base class at runtime.
+class DeletedAtManager(models.Manager.from_queryset(DeletedAtQuerySet)):  # type: ignore[misc]  # ty: ignore[unsupported-base]
     pass
 
 

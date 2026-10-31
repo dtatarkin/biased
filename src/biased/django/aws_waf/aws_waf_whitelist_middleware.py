@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from inspect import iscoroutinefunction, markcoroutinefunction
 
-from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpRequest, HttpResponse
@@ -12,7 +12,7 @@ from biased.django.aws_waf.aws_waf_regex_pattern import AwsWafRegexPatternSet
 class AwsWafWhitelistMiddleware(ABC):
     async_capable = True
     sync_capable = False
-    aws_waf_regex_pattern_sets: Sequence[AwsWafRegexPatternSet] = tuple()
+    aws_waf_regex_pattern_sets: Sequence[AwsWafRegexPatternSet] = ()
 
     @abstractmethod
     def build_forbidden_http_response(self, request: HttpRequest) -> HttpResponse:
