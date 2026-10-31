@@ -1,13 +1,28 @@
+import io
 import json
 import logging
+import re
+from collections.abc import Callable
 
 import pytest
 
 from biased.dtos.logging import LogFormatter, LoggingParams
 from biased.logging.configure import configure_logging
 from biased.logging.consts import HANDLER_NAME
+from biased.logging.settings import LoggingConfig
 
 log = logging.getLogger("tests.biased.logging")
+
+# Stands for a credential a process holds in memory: it is a local of the
+# frame that fails and appears nowhere else — not in the exception's text, not
+# in the event's payload.
+_FRAME_LOCAL = "frame-local-credential"
+
+# Removed before looking for a value, which a colored rendering may split.
+_ANSI = re.compile(r"\x1b\[[0-9;]*m")
+
+# What every escape sequence starts with: a rendering without it carries none.
+_ESC = "\x1b"
 
 
 class TestApplied:
@@ -149,3 +164,125 @@ class TestRendering:
         record = json.loads(capsys.readouterr().err)
         assert record["amount"] == "1.50"
         assert record["at"] == "2026-09-06T12:00:00Z"
+
+
+def _fail_holding(credential: str) -> None:
+    raise RuntimeError("request failed")
+
+
+class TestFrameLocals:
+    @pytest.mark.parametrize("colors", [False, True])
+    def test_human_traceback_names_the_frame_and_not_what_it_holds(
+        self,
+        pristine_root_logger: logging.Logger,
+        capsys: pytest.CaptureFixture[str],
+        colors: bool,
+    ) -> None:
+        configure_logging(
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=colors)
+        )
+
+        try:
+            _fail_holding(_FRAME_LOCAL)
+        except RuntimeError:
+            log.exception("request_error")
+
+        err = _ANSI.sub("", capsys.readouterr().err)
+        assert "_fail_holding" in err
+        assert _FRAME_LOCAL not in err
+
+    def test_json_traceback_names_the_frame_and_not_what_it_holds(
+        self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))
+
+        try:
+            _fail_holding(_FRAME_LOCAL)
+        except RuntimeError:
+            log.exception("request_error")
+
+        err = capsys.readouterr().err
+        assert "_fail_holding" in err
+        assert _FRAME_LOCAL not in err
+
+
+class TestColors:
+    @pytest.mark.parametrize("terminal", [True, False])
+    def test_unset_colors_follow_the_terminal(
+        self,
+        pristine_root_logger: logging.Logger,
+        stderr_builder: Callable[..., io.StringIO],
+        terminal: bool,
+    ) -> None:
+        stderr = stderr_builder(terminal=terminal)
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.human))
+
+        log.warning("pane_run", extra={"data": {"pane_id": 7}})
+
+        (line,) = stderr.getvalue().splitlines()
+        assert "pane_run" in line
+        assert (_ESC in line) is terminal
+
+    @pytest.mark.parametrize("colors", [True, False])
+    def test_explicit_colors_win_over_the_terminal(
+        self,
+        pristine_root_logger: logging.Logger,
+        stderr_builder: Callable[..., io.StringIO],
+        colors: bool,
+    ) -> None:
+        # The terminal says the opposite of what was asked for.
+        stderr = stderr_builder(terminal=not colors)
+        configure_logging(
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=colors)
+        )
+
+        log.warning("pane_run", extra={"data": {"pane_id": 7}})
+
+        (line,) = stderr.getvalue().splitlines()
+        assert "pane_run" in line
+        assert (_ESC in line) is colors
+
+    @pytest.mark.parametrize(("value", "colors"), [("true", True), ("false", False)])
+    def test_environment_colors_win_over_the_terminal(
+        self,
+        pristine_root_logger: logging.Logger,
+        stderr_builder: Callable[..., io.StringIO],
+        monkeypatch: pytest.MonkeyPatch,
+        value: str,
+        colors: bool,
+    ) -> None:
+        monkeypatch.setenv("LOG_FORMATTER", "human")
+        monkeypatch.setenv("LOG_COLORS", value)
+        stderr = stderr_builder(terminal=not colors)
+        configure_logging(LoggingConfig(_env_file=None))
+
+        log.warning("pane_run", extra={"data": {"pane_id": 7}})
+
+        (line,) = stderr.getvalue().splitlines()
+        assert "pane_run" in line
+        assert (_ESC in line) is colors
+
+    @pytest.mark.parametrize("colors", [None, True, False])
+    def test_json_record_carries_no_escape(
+        self,
+        pristine_root_logger: logging.Logger,
+        stderr_builder: Callable[..., io.StringIO],
+        colors: bool | None,
+    ) -> None:
+        # On a terminal, where the human rendering is colored unless told not
+        # to be.
+        stderr = stderr_builder(terminal=True)
+        configure_logging(
+            LoggingParams(level="DEBUG", formatter=LogFormatter.json, colors=colors)
+        )
+
+        log.warning("pane_run", extra={"data": {"pane_id": 7}})
+
+        (line,) = stderr.getvalue().splitlines()
+        assert _ESC not in line
+        record = json.loads(line)
+        assert record["event"] == "pane_run"
+        # Nor inside a value, where the encoder would have written it escaped.
+        assert not any(
+            _ESC in value for value in record.values() if isinstance(value, str)
+        )

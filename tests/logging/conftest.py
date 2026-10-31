@@ -1,5 +1,7 @@
+import io
 import logging
-from collections.abc import Iterator
+import sys
+from collections.abc import Callable, Iterator
 
 import pytest
 
@@ -33,3 +35,30 @@ def pristine_root_logger() -> Iterator[logging.Logger]:
     for handler in handlers:
         root.addHandler(handler)
     root.setLevel(level)
+
+
+class _Stderr(io.StringIO):
+    """Stands in for standard error: keeps what is written to it, and is a
+    terminal or not as it was told to be."""
+
+    def __init__(self, *, terminal: bool) -> None:
+        super().__init__()
+        self._terminal = terminal
+
+    def isatty(self) -> bool:
+        return self._terminal
+
+
+@pytest.fixture
+def stderr_builder(monkeypatch: pytest.MonkeyPatch) -> Callable[..., io.StringIO]:
+    """Puts a stream in place of ``sys.stderr`` for the rest of the test — a
+    terminal or not, as asked — and returns it to be read back. Call it before
+    configuring: that is when ``sys.stderr`` is looked at, both to decide on
+    color and to bind the handler."""
+
+    def build(*, terminal: bool) -> io.StringIO:
+        stream = _Stderr(terminal=terminal)
+        monkeypatch.setattr(sys, "stderr", stream)
+        return stream
+
+    return build
