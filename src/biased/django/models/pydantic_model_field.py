@@ -89,5 +89,5 @@ class PydanticModelField(JSONField):
 
     def get_prep_value(self, value):
         if isinstance(value, BaseModel):
-            value = value.model_dump()
+            value = value.model_dump(mode="json")
         return super().get_prep_value(value)

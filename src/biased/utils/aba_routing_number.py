@@ -1,5 +1,9 @@
 def is_aba_routing_number_valid(routing_number: str) -> bool:
-    if not routing_number.isdigit() or len(routing_number) != 9:
+    # ``isdigit`` alone admits non-ASCII digits, some of which ``int`` cannot parse.
+    if (
+        not (routing_number.isascii() and routing_number.isdigit())
+        or len(routing_number) != 9
+    ):
         return False
 
     digits = map(int, routing_number)

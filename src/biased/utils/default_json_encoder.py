@@ -4,7 +4,8 @@ from enum import Enum
 from json import JSONEncoder
 from uuid import UUID
 
-from pydantic import AnyUrl, BaseModel
+from pydantic import AnyUrl, BaseModel, MongoDsn, NatsDsn, PostgresDsn
+from pydantic_core import MultiHostUrl, Url
 from ulid import ULID
 
 
@@ -38,6 +39,10 @@ def _duration_iso_string(duration: timedelta):
     return f"{sign}P{days}DT{hours:02d}H{minutes:02d}M{seconds:02d}{ms}S"
 
 
+# Multi-host DSNs share no public base with ``AnyUrl``.
+_URL_TYPES = AnyUrl | PostgresDsn | MongoDsn | NatsDsn | Url | MultiHostUrl
+
+
 class DefaultJsonEncoder(JSONEncoder):
     def default(self, o):
         if isinstance(o, datetime):
@@ -46,17 +51,15 @@ class DefaultJsonEncoder(JSONEncoder):
             return o.isoformat()
         if isinstance(o, time):
             if _is_aware(o):
-                raise ValueError("JSON can't represent timezone-aware times.")
-            r = o.isoformat()
-            if o.microsecond:
-                r = r[:12]
-            return r
+                # TypeError, as ``JSONEncoder.default`` documents, so a subclass's fallback catches it.
+                raise TypeError("JSON can't represent timezone-aware times.")
+            return o.isoformat()
         if isinstance(o, timedelta):
             return _duration_iso_string(o)
-        if isinstance(o, Decimal | UUID | ULID | AnyUrl):
+        if isinstance(o, Decimal | UUID | ULID | _URL_TYPES):
             return str(o)
         if isinstance(o, BaseModel):
-            return o.model_dump()
+            return o.model_dump(mode="json")
         if isinstance(o, Enum):
             return o.value
         if isinstance(o, bytes):
