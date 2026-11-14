@@ -13,7 +13,7 @@ class AwsWafRegexPatternSet(tuple[re.Pattern, ...]):
     def __new__(cls, *patterns: str):
         if len(patterns) > 10:
             raise ValueError("AWS WAF Pattern Set can hold max 10 items")
-        return super().__new__(cls, map(re.compile, patterns))
+        return super().__new__(cls, (re.compile(pattern) for pattern in patterns))
 
     @classmethod
     def load(cls, file_path: Path) -> Self:

@@ -8,7 +8,7 @@ from biased.logging.settings import LoggingConfig
 
 class TestLoggingConfig:
     def test_defaults_to_json_at_info(self) -> None:
-        config = LoggingConfig(_env_file=None)
+        config = LoggingConfig(_env_file=None)  # ty: ignore[unknown-argument]
 
         assert config.formatter is LogFormatter.json
         assert config.level == logging.INFO
@@ -17,14 +17,14 @@ class TestLoggingConfig:
     def test_colors_are_left_unset_by_default(self) -> None:
         # Unset is a state of its own — the terminal decides — and not a
         # spelling of "off".
-        assert LoggingConfig(_env_file=None).colors is None
+        assert LoggingConfig(_env_file=None).colors is None  # ty: ignore[unknown-argument]
 
     def test_binds_log_prefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("LOG_FORMATTER", "human")
         monkeypatch.setenv("LOG_LEVEL", "DEBUG")
         monkeypatch.setenv("LOG_LEVELS__a.b", "WARNING")
 
-        config = LoggingConfig(_env_file=None)
+        config = LoggingConfig(_env_file=None)  # ty: ignore[unknown-argument]
 
         assert config.formatter is LogFormatter.human
         assert config.level == logging.DEBUG

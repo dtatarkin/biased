@@ -1,6 +1,7 @@
 from typing import Any
 
 import pydantic
+from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField
 from pydantic import BaseModel
@@ -37,15 +38,23 @@ class PydanticModelField(JSONField):
         self._value_to_pydantic_model(value)
         super().validate(value, model_instance)
 
-    def formfield(self, **kwargs: Any) -> Any:
+    def formfield(
+        self,
+        form_class: type[forms.Field] | None = None,
+        choices_form_class: type[forms.ChoiceField] | None = None,
+        **kwargs: Any,
+    ) -> forms.Field | None:
         params: dict[str, Any] = {
-            "form_class": PydanticModelFormField,
             "pydantic_model": self.pydantic_model,
             "encoder": self.encoder,
             "decoder": self.decoder,
             **kwargs,
         }
-        return super().formfield(**params)
+        return super().formfield(
+            form_class=form_class or PydanticModelFormField,
+            choices_form_class=choices_form_class,
+            **params,
+        )
 
     def pre_save(self, model_instance, add):
         value = super().pre_save(model_instance, add)
