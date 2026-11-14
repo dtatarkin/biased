@@ -9,7 +9,7 @@ authors = [{ name = "Dmitry Tatarkin", email = "tatarkin@gmail.com" }]
 requires-python = ">=3.12"
 dependencies = [
   "injector",
-  "pydantic>=2",
+  "pydantic>=2.7",
   "pydantic-settings>=2",
   "python-dateutil",
   "structlog",
