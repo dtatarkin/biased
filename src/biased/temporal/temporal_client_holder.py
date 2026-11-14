@@ -17,7 +17,11 @@ class TemporalClientHolder:
             self._client = await Client.connect(
                 params.target_host,
                 namespace=params.namespace,
-                api_key=params.api_key,
+                api_key=(
+                    params.api_key.get_secret_value()
+                    if params.api_key is not None
+                    else None
+                ),
                 identity=params.identity,
                 lazy=params.lazy,
                 data_converter=pydantic_data_converter,

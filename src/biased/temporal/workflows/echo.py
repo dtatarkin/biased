@@ -6,10 +6,6 @@ from biased.temporal.workflows.base import BaseWorkflow
 from biased.temporal.workflows.dtos import EchoWorkflowArg, EchoWorkflowResult
 from biased.temporal.workflows.workflow import execute_activity
 
-# Import activity, passing it through the sandbox without reloading the module
-with workflow.unsafe.imports_passed_through():
-    ...
-
 
 @workflow.defn(name="echo")
 class EchoWorkflow(BaseWorkflow[EchoWorkflowArg, EchoWorkflowResult]):
