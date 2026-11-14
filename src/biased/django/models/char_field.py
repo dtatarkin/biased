@@ -37,7 +37,7 @@ class FixedLengthDigitsField(FixedLengthCharField):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.validators.append(
-            RegexValidator(regex=r"^[0-9]+$", message="Only digit characters allowed.")
+            RegexValidator(regex=r"^[0-9]+\Z", message="Only digit characters allowed.")
         )
 
 

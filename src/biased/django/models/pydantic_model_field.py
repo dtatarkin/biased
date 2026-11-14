@@ -4,6 +4,7 @@ import pydantic
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField
+from django.db.models.fields.json import KeyTransform
 from pydantic import BaseModel
 
 from biased.django.forms.pydantic_model_form_field import PydanticModelFormField
@@ -73,8 +74,9 @@ class PydanticModelField(JSONField):
 
     def from_db_value(self, value, expression, connection):
         value = super().from_db_value(value, expression, connection)
-        if value is None:
-            return None
+        # A key lookup selects one member of the document, not a whole model.
+        if value is None or isinstance(expression, KeyTransform):
+            return value
         value = self._value_to_pydantic_model(value)
         return value
 

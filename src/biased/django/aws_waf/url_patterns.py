@@ -2,7 +2,10 @@ from collections.abc import Iterable, Sequence
 from typing import Any
 
 from django.urls import URLPattern, URLResolver
-from django.urls.resolvers import RegexPattern, RoutePattern
+from django.urls.resolvers import LocalePrefixPattern, RegexPattern, RoutePattern
+
+# A resolver's own pattern: `path()`, `re_path()` or `i18n_patterns()` around an include.
+_PrefixPattern = RoutePattern | RegexPattern | LocalePrefixPattern
 
 
 class UrlArgsContext:
@@ -38,7 +41,7 @@ class UrlArgsContext:
 
 def _iter_url_patterns(
     url_patterns: Iterable[URLPattern | URLResolver], base=None
-) -> Iterable[tuple[URLPattern | RoutePattern, ...]]:
+) -> Iterable[tuple[URLPattern | _PrefixPattern, ...]]:
     if base is None:
         base = ()
     if not url_patterns:
@@ -56,32 +59,32 @@ def _iter_url_patterns(
 
 
 def _iter_route_patterns(
-    url_patterns: Iterable[RoutePattern | URLPattern],
-) -> Iterable[RoutePattern | RegexPattern]:
+    url_patterns: Iterable[_PrefixPattern | URLPattern],
+) -> Iterable[_PrefixPattern]:
     for url_pattern in url_patterns:
         if isinstance(url_pattern, URLPattern):
             # Narrows for the type checker; a URLPattern holds no other pattern kind here.
             assert isinstance(url_pattern.pattern, (RoutePattern | RegexPattern))  # nosec B101  # noqa: S101
             yield url_pattern.pattern
-        elif isinstance(url_pattern, RoutePattern):
+        elif isinstance(url_pattern, _PrefixPattern):
             yield url_pattern
         else:
             # Released: a caller may catch this RuntimeError, so its type stays.
             raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")  # noqa: TRY004
 
 
-def _route_pattern_to_regex_pattern(route_pattern: RoutePattern | RegexPattern) -> str:
+def _route_pattern_to_regex_pattern(route_pattern: _PrefixPattern) -> str:
     return route_pattern.regex.pattern.removeprefix("^").replace("/", r"\/")
 
 
 def _route_patterns_to_regex_pattern(
-    route_patterns: Iterable[RoutePattern | RegexPattern],
+    route_patterns: Iterable[_PrefixPattern],
 ) -> str:
     return "^" + "".join(map(_route_pattern_to_regex_pattern, route_patterns))
 
 
 def _route_patterns_to_str(
-    route_patterns: Iterable[RoutePattern | RegexPattern],
+    route_patterns: Iterable[_PrefixPattern],
 ) -> str:
     return "".join(map(str, route_patterns))
 

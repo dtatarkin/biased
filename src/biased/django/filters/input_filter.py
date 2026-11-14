@@ -70,11 +70,13 @@ class IntFieldInputFilter(CommaSeparatedInputFilter):
     field_name: str
 
     def value_to_filter(self, value: str) -> Q:
-        if value.lstrip("-").isdigit():
-            return Q(**{self.field_name: int(value)})
-        # A non-numeric token cannot be an id; an empty ``__in`` is Django's
-        # backend-agnostic "match nothing" (short-circuited as an empty result).
-        return Q(**{f"{self.field_name}__in": []})
+        try:
+            number = int(value)
+        except ValueError:
+            # A non-numeric token cannot be an id; an empty ``__in`` is Django's
+            # backend-agnostic "match nothing" (short-circuited as an empty result).
+            return Q(**{f"{self.field_name}__in": []})
+        return Q(**{self.field_name: number})
 
 
 class StrArrayInputFilter(InputFilter):

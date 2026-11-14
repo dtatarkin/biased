@@ -37,6 +37,9 @@ class PydanticModelFormField(JSONField):
 
     def to_python(self, value):
         value = super().to_python(value)
+        # Empty input is left to the `required` check, not the schema.
+        if value is None:
+            return None
         value = self._value_to_pydantic_model(value)
         return value
 
