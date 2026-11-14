@@ -24,7 +24,6 @@ dotenv-run = "biased.scripts.dotenv_run:main"
 django = ["django"]
 ninja = ["django-ninja"]
 django-redis = ["django-redis"]
-django-jsonform = ["django-jsonform"]
 temporal = ["temporalio"]
 
 [build-system]
@@ -64,7 +63,6 @@ module = [
   "pydantic_settings.*",
   "django_redis.*",
   "ninja.*",
-  "admin_form_action.*",
   "temporalio",
   "temporalio.*",
 ]
