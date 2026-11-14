@@ -40,7 +40,6 @@ lint = [
   "mypy",
   "pre-commit",
   "pyright",
-  "ruff",
   "types-python-dateutil",
 ]
 
