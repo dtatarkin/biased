@@ -1,8 +1,13 @@
 import asyncio
+import logging
 
 from structlog.typing import EventDict
 
-from biased.logging.processors import add_async_task_info, merge_data_payload
+from biased.logging.processors import (
+    add_async_task_info,
+    add_record_timestamp,
+    merge_data_payload,
+)
 
 
 class TestMergeDataPayload:
@@ -58,3 +63,13 @@ class TestAddAsyncTaskInfo:
             loop.close()
 
         assert events == [{"event": "x"}]
+
+
+class TestAddRecordTimestamp:
+    def test_stamps_the_record_creation_time_in_utc(self) -> None:
+        record = logging.LogRecord("x", logging.INFO, __file__, 1, "x", None, None)
+        record.created = 1_789_000_000.25
+
+        event = add_record_timestamp(None, "info", {"event": "x", "_record": record})
+
+        assert event["timestamp"] == "2026-09-10T00:26:40.250000Z"

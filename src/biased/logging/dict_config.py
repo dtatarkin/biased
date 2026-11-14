@@ -1,16 +1,20 @@
 import sys
-from typing import cast
+from typing import Any, cast
 
 import structlog
 from injector import inject
 
 from biased.dtos.logging_params import LogFormatter, LoggingParams
 from biased.logging.consts import HANDLER_NAME
-from biased.logging.processors import add_async_task_info, merge_data_payload
+from biased.logging.processors import (
+    add_async_task_info,
+    add_record_timestamp,
+    merge_data_payload,
+)
 from biased.logging.utils import structlog_json_serializer
 
 
-def get_logging_dict_config(params: LoggingParams) -> dict:
+def get_logging_dict_config(params: LoggingParams) -> dict[str, Any]:
     """The one ``logging.config.dictConfig`` mapping: a single stderr handler
     whose ``ProcessorFormatter`` runs every record through the enrichment
     chain and then the renderer ``params.formatter`` selects.
@@ -40,19 +44,20 @@ def get_logging_dict_config(params: LoggingParams) -> dict:
     )
 
     # Shared by both renderers; the processor-meta keys are dropped last, right
-    # before rendering, because ``add_logger_name`` needs the record.
+    # before rendering, because ``add_logger_name`` and ``add_record_timestamp``
+    # read the record.
     enrichment = (
         structlog.contextvars.merge_contextvars,
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
-        structlog.processors.TimeStamper(fmt="iso"),
+        add_record_timestamp,
         add_async_task_info,
         structlog.processors.StackInfoRenderer(),
     )
 
     colors = params.colors if params.colors is not None else sys.stderr.isatty()
 
-    config: dict = {
+    config: dict[str, Any] = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
@@ -102,7 +107,7 @@ def get_logging_dict_config(params: LoggingParams) -> dict:
         },
     }
 
-    loggers = cast(dict, config["loggers"])
+    loggers = cast(dict[str, dict[str, Any]], config["loggers"])
     for logger_name, level in params.levels.items():
         if logger_name in loggers:
             loggers[logger_name]["level"] = level

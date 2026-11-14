@@ -1,6 +1,7 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import SettingsConfigDict
 
 from biased.dtos.logging_params import LoggingParams
+from biased.logging.logger_name_case import KeepsLoggerNameCase
 from biased.settings.env_file_paths import EnvFilePathsSettings
 
 # Shared by both classes below, so the two bindings cannot drift apart.
@@ -12,7 +13,7 @@ _LOG_ENV = SettingsConfigDict(
 )
 
 
-class LoggingConfig(LoggingParams, BaseSettings):
+class LoggingConfig(LoggingParams, KeepsLoggerNameCase):
     """Bind the logging parameters to ``LOG_``-prefixed environment variables.
 
     A dependency-injection-free ``BaseSettings`` that any process — including a
@@ -22,7 +23,8 @@ class LoggingConfig(LoggingParams, BaseSettings):
     ``levels`` overrides, console ``colors``) and reads them from the
     environment under the neutral ``LOG_`` prefix, e.g. ``LOG_LEVEL=DEBUG`` or
     ``LOG_FORMATTER=human``. The nested per-logger ``levels`` map uses a ``__``
-    delimiter (``LOG_LEVELS__some.logger=WARNING``). A ``.env`` file is read when
+    delimiter (``LOG_LEVELS__some.logger=WARNING``), the logger name keeping
+    its case (:class:`KeepsLoggerNameCase`). A ``.env`` file is read when
     present in the working directory; unknown ``LOG_``-prefixed keys are ignored
     so a single environment may carry knobs for several settings classes.
     """
@@ -30,7 +32,7 @@ class LoggingConfig(LoggingParams, BaseSettings):
     model_config = SettingsConfigDict(**_LOG_ENV, env_file=".env")
 
 
-class LoggingSettings(LoggingParams, EnvFilePathsSettings):
+class LoggingSettings(LoggingParams, KeepsLoggerNameCase, EnvFilePathsSettings):
     """Bind the logging parameters with env-file paths supplied via a container.
 
     The dependency-injection counterpart to :class:`LoggingConfig`: it composes

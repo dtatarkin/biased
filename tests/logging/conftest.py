@@ -11,6 +11,8 @@ _LOG_ENV_KEYS = (
     "LOG_COLORS",
     "LOG_LEVELS__a.b",
     "LOG_LEVELS__tests.biased.logging",
+    "LOG_LEVELS__MyLib.Sub",
+    "log_levels__Other.Lib",
 )
 
 

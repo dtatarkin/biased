@@ -13,4 +13,6 @@ def configure_logging(params: LoggingParams | None = None) -> None:
     :class:`LoggingConfig`, i.e. the ``LOG_``-prefixed environment; pass an
     explicit ``LoggingParams`` only when the environment must not decide.
     """
-    logging.config.dictConfig(get_logging_dict_config(params or LoggingConfig()))
+    if params is None:
+        params = LoggingConfig()
+    logging.config.dictConfig(get_logging_dict_config(params))
