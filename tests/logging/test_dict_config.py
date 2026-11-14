@@ -24,11 +24,11 @@ class TestShape:
         assert get_logging_dict_config(LoggingParams())["loggers"]["root"]["level"] == (
             logging.INFO
         )
-        config = get_logging_dict_config(LoggingParams(level="DEBUG"))  # ty: ignore[invalid-argument-type]
+        config = get_logging_dict_config(LoggingParams(level="DEBUG"))
         assert config["loggers"]["root"]["level"] == logging.DEBUG
 
     def test_per_logger_overrides_become_logger_entries(self) -> None:
-        config = get_logging_dict_config(LoggingParams(levels={"a.b": "WARNING"}))  # ty: ignore[invalid-argument-type]
+        config = get_logging_dict_config(LoggingParams(levels={"a.b": "WARNING"}))
 
         assert config["loggers"]["a.b"] == {"level": logging.WARNING}
 
@@ -41,7 +41,7 @@ class TestShape:
         assert type(human_tail).__name__ == "ConsoleRenderer"
 
     def test_injectable_dict_has_the_same_shape(self) -> None:
-        params = LoggingParams(level="ERROR")  # ty: ignore[invalid-argument-type]
+        params = LoggingParams(level="ERROR")
 
         injectable = LoggingDictConfig(params)
         plain = get_logging_dict_config(params)

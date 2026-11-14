@@ -29,7 +29,7 @@ class TestApplied:
     def test_root_gets_the_one_handler_at_the_configured_level(
         self, pristine_root_logger: logging.Logger
     ) -> None:
-        configure_logging(LoggingParams(level="WARNING"))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="WARNING"))
 
         assert [h.name for h in pristine_root_logger.handlers] == [HANDLER_NAME]
         assert pristine_root_logger.level == logging.WARNING
@@ -46,7 +46,7 @@ class TestApplied:
     def test_below_the_level_nothing_reaches_stderr(
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        configure_logging(LoggingParams(level="WARNING"))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="WARNING"))
 
         log.info("quiet_event", extra={"data": {"id": 1}})
 
@@ -55,7 +55,7 @@ class TestApplied:
     def test_per_logger_override_opens_one_logger(
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        configure_logging(LoggingParams(level="WARNING", levels={log.name: "DEBUG"}))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="WARNING", levels={log.name: "DEBUG"}))
 
         log.debug("loud_event")
         logging.getLogger("tests.biased.other").debug("quiet_event")
@@ -70,7 +70,7 @@ class TestRendering:
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
     ) -> None:
         configure_logging(
-            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=False)  # ty: ignore[invalid-argument-type]
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=False)
         )
 
         log.warning("pane_run", extra={"data": {"pane_id": 7, "label": "build"}})
@@ -85,7 +85,7 @@ class TestRendering:
     def test_json_record_is_one_flat_object(
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))
 
         log.info("panes_killed", extra={"data": {"pane_ids": [1, 2]}})
 
@@ -104,7 +104,7 @@ class TestRendering:
     def test_json_exception_is_rendered_as_a_traceback(
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))
 
         try:
             raise ValueError("boom")
@@ -119,7 +119,7 @@ class TestRendering:
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
     ) -> None:
         configure_logging(
-            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=False)  # ty: ignore[invalid-argument-type]
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=False)
         )
 
         try:
@@ -149,7 +149,7 @@ class TestRendering:
         from datetime import UTC, datetime
         from decimal import Decimal
 
-        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))
 
         log.info(
             "paid",
@@ -179,7 +179,7 @@ class TestFrameLocals:
         colors: bool,
     ) -> None:
         configure_logging(
-            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=colors)  # ty: ignore[invalid-argument-type]
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=colors)
         )
 
         try:
@@ -194,7 +194,7 @@ class TestFrameLocals:
     def test_json_traceback_names_the_frame_and_not_what_it_holds(
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.json))
 
         try:
             _fail_holding(_FRAME_LOCAL)
@@ -215,7 +215,7 @@ class TestColors:
         terminal: bool,
     ) -> None:
         stderr = stderr_builder(terminal=terminal)
-        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.human))  # ty: ignore[invalid-argument-type]
+        configure_logging(LoggingParams(level="DEBUG", formatter=LogFormatter.human))
 
         log.warning("pane_run", extra={"data": {"pane_id": 7}})
 
@@ -233,7 +233,7 @@ class TestColors:
         # The terminal says the opposite of what was asked for.
         stderr = stderr_builder(terminal=not colors)
         configure_logging(
-            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=colors)  # ty: ignore[invalid-argument-type]
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=colors)
         )
 
         log.warning("pane_run", extra={"data": {"pane_id": 7}})
@@ -254,7 +254,7 @@ class TestColors:
         monkeypatch.setenv("LOG_FORMATTER", "human")
         monkeypatch.setenv("LOG_COLORS", value)
         stderr = stderr_builder(terminal=not colors)
-        configure_logging(LoggingConfig(_env_file=None))  # ty: ignore[unknown-argument]
+        configure_logging(LoggingConfig(_env_file=None))
 
         log.warning("pane_run", extra={"data": {"pane_id": 7}})
 
@@ -273,7 +273,7 @@ class TestColors:
         # to be.
         stderr = stderr_builder(terminal=True)
         configure_logging(
-            LoggingParams(level="DEBUG", formatter=LogFormatter.json, colors=colors)  # ty: ignore[invalid-argument-type]
+            LoggingParams(level="DEBUG", formatter=LogFormatter.json, colors=colors)
         )
 
         log.warning("pane_run", extra={"data": {"pane_id": 7}})
