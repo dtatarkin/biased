@@ -29,3 +29,6 @@ class PydanticDjangoValidator:
             isinstance(other, self.__class__)
             and self._dotted_path_to_type == other._dotted_path_to_type
         )
+
+    def __hash__(self):
+        return hash((self.__class__, self._dotted_path_to_type))

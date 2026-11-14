@@ -58,7 +58,7 @@ class PydanticModelFormField(JSONField):
         if isinstance(value, InvalidJSONInput):
             return value
         if isinstance(value, self.pydantic_model):
-            value = value.dict()
+            value = value.model_dump(mode="json")
         return super().prepare_value(value)
 
     def has_changed(self, initial, data):

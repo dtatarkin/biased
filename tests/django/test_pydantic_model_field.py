@@ -1,5 +1,8 @@
+import warnings
+
 import pytest
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db import connection, models
 from pydantic import BaseModel
 
@@ -61,3 +64,18 @@ def test_form_field_still_validates_the_schema():
     assert form_field.clean('{"a": 1, "b": "x"}') == Payload(a=1, b="x")
     with pytest.raises(Exception, match="invalid schema"):
         form_field.clean('{"a": "not a number"}')
+
+
+@pytest.mark.usefixtures("document_table")
+def test_row_no_longer_matching_the_schema_fails_loudly():
+    Document.objects.create(data=Payload(a=1, b="x"))
+    Document.objects.update(data={"a": "not a number"})
+    with pytest.raises(ValidationError, match="invalid schema"):
+        Document.objects.get()
+
+
+def test_form_field_renders_a_model_as_json_without_deprecation():
+    form_field = _form_field(PydanticModelField(Payload))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert form_field.prepare_value(Payload(a=1, b="x")) == '{"a": 1, "b": "x"}'

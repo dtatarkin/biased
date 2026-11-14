@@ -172,8 +172,7 @@ def url_link(short_description: str, content: str = "-", target: str = "_self"):
                 return content
             else:
                 params = {"content": content, "target": target}
-                # A second call: `result` above already ruled out None.
-                params.update(func(self, obj))  # ty: ignore[no-matching-overload]
+                params.update(result)
                 return format_html(
                     '<a href="{url}" target="{target}">{content}</a>', **params
                 )
@@ -225,8 +224,9 @@ class ExternalIdModelAdmin(ModelAdmin):
         self, request, object_id, form_url="", extra_context=None
     ):
         try:
-            object_pk = str(self.model.objects.get(external_id=object_id).pk)
-        except self.model.DoesNotExist:
+            object_pk = str(self.model._default_manager.get(external_id=object_id).pk)
+        # An ambiguous external id names no single object either.
+        except (self.model.DoesNotExist, self.model.MultipleObjectsReturned):
             # A private ModelAdmin method the stubs omit.
             return self._get_obj_does_not_exist_redirect(request, self.opts, object_id)  # ty: ignore[unresolved-attribute]
         return self.changeform_view(request, object_pk, form_url, extra_context)
