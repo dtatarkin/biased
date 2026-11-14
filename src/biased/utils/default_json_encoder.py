@@ -60,5 +60,5 @@ class DefaultJsonEncoder(JSONEncoder):
         if isinstance(o, Enum):
             return o.value
         if isinstance(o, bytes):
-            return o.decode()
+            return o.decode(errors="backslashreplace")
         return super().default(o)
