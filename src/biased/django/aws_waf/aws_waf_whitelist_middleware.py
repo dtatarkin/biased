@@ -29,7 +29,8 @@ class AwsWafWhitelistMiddleware(ABC):
         path = request.path
         for regex_pattern_set in self.aws_waf_regex_pattern_sets:
             for regex_pattern in regex_pattern_set:
-                if regex_pattern.match(path):
+                # AWS WAF matches a regex anywhere in the path unless it is anchored.
+                if regex_pattern.search(path):
                     return None
 
         return self.build_forbidden_http_response(request=request)

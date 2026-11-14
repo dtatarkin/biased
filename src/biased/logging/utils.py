@@ -1,7 +1,14 @@
 import json
+import reprlib
+from collections.abc import Mapping
 from typing import Any
 
 from biased.utils.default_json_encoder import DefaultJsonEncoder
+
+# What ``json.dumps`` itself fails on before ``default`` sees anything: keys it
+# cannot encode or sort (a tuple key, ``1`` beside ``"b"``), a reference cycle,
+# nesting deeper than the interpreter's recursion limit.
+_DUMP_ERRORS = (TypeError, ValueError, RecursionError)
 
 
 def _structlog_fallback(o: Any) -> Any:
@@ -35,7 +42,52 @@ class StructlogJsonEncoder(DefaultJsonEncoder):
             return _structlog_fallback(o)
 
 
-def structlog_json_serializer(*args: Any, **kwargs: Any) -> str:
+def _json_key(key: object) -> str:
+    if isinstance(key, str):
+        return key
+    if key is None or isinstance(key, int | float):
+        # The text ``json`` itself writes for such a key: ``1``, ``true``, ``null``.
+        return json.dumps(key)
+    return repr(key)
+
+
+def _with_str_keys(value: Any, path: frozenset[int]) -> Any:
+    """``value`` with every dict key a string and every cycle cut, the
+    containers ``json`` encodes natively walked, anything else left to the
+    encoder."""
+    if not isinstance(value, dict | list | tuple):
+        return value
+    if id(value) in path:
+        return "<circular reference>"
+    path |= {id(value)}
+    if isinstance(value, dict):
+        return {_json_key(k): _with_str_keys(v, path) for k, v in value.items()}
+    return [_with_str_keys(item, path) for item in value]
+
+
+def _safe_repr(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    try:
+        return repr(value)
+    except Exception:  # noqa: BLE001 — the last resort must not raise
+        # Depth- and size-bounded, and survives a ``__repr__`` that raises.
+        return reprlib.repr(value)
+
+
+def _flattened(obj: Any) -> Any:
+    if isinstance(obj, Mapping):
+        return {_json_key(k): _safe_repr(v) for k, v in obj.items()}
+    return _safe_repr(obj)
+
+
+def structlog_json_serializer(obj: Any, *args: Any, **kwargs: Any) -> str:
+    """Render a log event as compact JSON with sorted keys, never raising.
+
+    An event ``json`` cannot dump as it stands is retried with its dict keys
+    turned into strings and its cycles cut, and failing that with every
+    top-level value rendered by ``repr``.
+    """
     # ``JSONRenderer`` passes its own ``default``; dropped, because a
     # ``default`` given to ``json.dumps`` replaces the encoder's ``default``
     # method and would bypass ``StructlogJsonEncoder`` entirely.
@@ -43,4 +95,11 @@ def structlog_json_serializer(*args: Any, **kwargs: Any) -> str:
     kwargs.update(
         {"cls": StructlogJsonEncoder, "sort_keys": True, "separators": (",", ":")}
     )
-    return json.dumps(*args, **kwargs)
+    try:
+        return json.dumps(obj, *args, **kwargs)
+    except _DUMP_ERRORS:
+        pass
+    try:
+        return json.dumps(_with_str_keys(obj, frozenset()), *args, **kwargs)
+    except _DUMP_ERRORS:
+        return json.dumps(_flattened(obj), *args, **kwargs)

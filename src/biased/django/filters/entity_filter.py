@@ -1,10 +1,14 @@
 from enum import StrEnum, auto, unique
 
 from django.db.models import Q, Value
-from pydantic import TypeAdapter, ValidationError
+from pydantic import ValidationError
 
-from biased.django.filters.input_filter import CommaSeparatedInputFilter
+from biased.django.filters.input_filter import (
+    CommaSeparatedInputFilter,
+    parse_int_token,
+)
 from biased.types import UlidStr
+from biased.utils.ulid import validate_ulid_str
 
 
 @unique
@@ -16,12 +20,11 @@ class ValueType(StrEnum):
 
 
 def _parse_value(value: str) -> tuple[ValueType, int | UlidStr | str]:
+    number = parse_int_token(value)
+    if number is not None:
+        return ValueType.int, number
     try:
-        return ValueType.int, int(value)
-    except ValueError:
-        pass
-    try:
-        return ValueType.ulid, TypeAdapter(UlidStr).validate_python(value)
+        return ValueType.ulid, validate_ulid_str(value)
     except ValidationError:
         pass
     return ValueType.str, value.strip('"')

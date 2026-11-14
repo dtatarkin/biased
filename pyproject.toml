@@ -21,7 +21,7 @@ dependencies = [
 dotenv-run = "biased.scripts.dotenv_run:main"
 
 [project.optional-dependencies]
-django = ["django"]
+django = ["django>=5.0"]
 ninja = ["django-ninja"]
 django-redis = ["django-redis"]
 temporal = ["temporalio"]

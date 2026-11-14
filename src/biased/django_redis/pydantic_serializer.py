@@ -9,9 +9,11 @@ class PydanticSerializer(BaseSerializer):
     not a model: a serializer cannot know which model a key holds, so the
     caller validates it with ``Model.model_validate_json(cache.get(key))``.
 
-    Plain ints never reach a serializer — django-redis stores them as they are
-    and reads them back as ``int``. Any other non-model value raises
-    ``TypeError``.
+    django-redis stores a plain ``int`` as it is, without this serializer,
+    and reads back as ``int`` any stored value that parses as one — so a
+    model whose JSON is a bare integer, such as a ``RootModel[int]``, comes
+    back as ``int``, not bytes. Any other non-model value, ``bool`` included,
+    raises ``TypeError``.
     """
 
     def dumps(self, value: object) -> bytes:

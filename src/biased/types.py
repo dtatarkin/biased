@@ -143,12 +143,15 @@ UlidStr = Annotated[
     StringConstraints(
         strict=True,
         strip_whitespace=True,
-        to_upper=True,
         min_length=26,
         max_length=26,
         pattern=ULID_PATTERN,
     ),
     AfterValidator(lambda x: str(ULID.from_str(x))),
+    # Crockford Base32 is case-insensitive. Upper-cased ahead of the pattern,
+    # which ``StringConstraints.to_upper`` would not be, and outside it, so the
+    # published schema keeps a pattern any JSON Schema regex dialect reads.
+    BeforeValidator(lambda x: x.upper() if isinstance(x, str) else x),
     # This Examples annotation leads to "😱 Could not render Parameters, see the console." in Swagger
     # while rendering URL params, probably Django Ninja bug, uncomment when fixed
     # Examples(["01JXZEA2CWN5MF175CZATYGYWQ"]),

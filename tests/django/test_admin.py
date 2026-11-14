@@ -5,7 +5,7 @@ from django.contrib.admin import AdminSite
 from django.db import connection, models
 from django.http import HttpRequest, HttpResponse
 
-from biased.django.admin import ExternalIdModelAdmin, url_link
+from biased.django.admin import ExternalIdModelAdmin, html_image_tag, url_link
 
 
 class Account(models.Model):
@@ -68,3 +68,13 @@ def test_url_link_calls_the_wrapped_method_once():
     html = site(None, "row")
     assert calls == ["row"]
     assert html == '<a href="https://example.com/" target="_self">-</a>'
+
+
+def test_html_image_tag_escapes_attribute_values():
+    @html_image_tag("Logo", attributes={"alt": '"><script>', "hidden": True})
+    def logo(self: Any, obj: Any) -> str:
+        return "/logo.png"
+
+    assert logo(None, "row") == (
+        '<img src="/logo.png" alt="&quot;&gt;&lt;script&gt;" hidden/>'
+    )

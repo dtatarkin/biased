@@ -1,4 +1,5 @@
 import operator
+import re
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from functools import reduce
@@ -7,6 +8,17 @@ from django.contrib.admin import ModelAdmin, SimpleListFilter
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest
+
+# ASCII digits with an optional sign: ``int()`` alone also takes ``1_000``,
+# surrounding whitespace and non-ASCII digits, none of which an id is typed as.
+_INT_TOKEN = re.compile(r"[+-]?[0-9]+")
+
+
+def parse_int_token(value: str) -> int | None:
+    """The integer a filter token spells, or ``None`` when it spells none."""
+    if _INT_TOKEN.fullmatch(value) is None:
+        return None
+    return int(value)
 
 
 class InputFilter(SimpleListFilter):
@@ -70,9 +82,8 @@ class IntFieldInputFilter(CommaSeparatedInputFilter):
     field_name: str
 
     def value_to_filter(self, value: str) -> Q:
-        try:
-            number = int(value)
-        except ValueError:
+        number = parse_int_token(value)
+        if number is None:
             # A non-numeric token cannot be an id; an empty ``__in`` is Django's
             # backend-agnostic "match nothing" (short-circuited as an empty result).
             return Q(**{f"{self.field_name}__in": []})

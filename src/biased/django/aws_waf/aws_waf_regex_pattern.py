@@ -17,7 +17,7 @@ class AwsWafRegexPatternSet(tuple[re.Pattern, ...]):
 
     @classmethod
     def load(cls, file_path: Path) -> Self:
-        with open(file_path) as f:
+        with open(file_path, encoding="utf-8") as f:
             patterns = filter(bool, (pattern.rstrip() for pattern in f))
             return cls(*patterns)
 
@@ -30,7 +30,8 @@ def validate_aws_waf_regex_patterns(
     def search_aws_waf_pattern(url_example: str) -> re.Pattern | None:
         for aws_waf_pattern_set in aws_waf_pattern_sets:
             for aws_waf_pattern in aws_waf_pattern_set:
-                if aws_waf_pattern.match(url_example):
+                # AWS WAF matches a regex anywhere in the path unless it is anchored.
+                if aws_waf_pattern.search(url_example):
                     return aws_waf_pattern
         return None
 

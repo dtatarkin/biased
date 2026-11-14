@@ -43,6 +43,12 @@ def test_whole_document_loads_as_the_model():
 
 
 @pytest.mark.usefixtures("document_table")
+def test_nullable_field_stores_null():
+    Document.objects.create(data=None)
+    assert Document.objects.get().data is None
+
+
+@pytest.mark.usefixtures("document_table")
 def test_key_lookup_returns_the_member_not_a_model():
     Document.objects.create(data=Payload(a=1, b="x"))
     assert list(Document.objects.values_list("data__a", "data__b")) == [(1, "x")]

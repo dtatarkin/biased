@@ -5,9 +5,9 @@ from typing import Any
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.options import InlineModelAdmin
 from django.db.models import Model
+from django.forms.utils import flatatt
 from django.urls import path, reverse
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 
 from biased.django.utils.reverse import reverse_querystring
 
@@ -133,16 +133,9 @@ def admin_query_params_list_link(
 
 
 def _build_html_image_tag(url: str, attributes: dict[str, Any] | None = None) -> str:
-    if attributes:
-        # The attributes are the admin author's literals, never request input.
-        attributes_html = mark_safe(  # noqa: S308
-            " ".join(f'{attr}="{value}"' for attr, value in attributes.items())
-        )  # nosec B308:blacklist, B703:django_mark_safe
-    else:
-        attributes_html = mark_safe("")  # nosec B308:blacklist, B703:django_mark_safe
-    return format_html(
-        '<img src="{url}" {attributes_html}/>', url=url, attributes_html=attributes_html
-    )
+    # `flatatt` escapes each value, renders a `True` value as a bare attribute
+    # and drops a `False` or `None` one.
+    return format_html('<img src="{}"{}/>', url, flatatt(attributes or {}))
 
 
 def html_image_tag(

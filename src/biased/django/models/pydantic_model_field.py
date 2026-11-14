@@ -66,7 +66,9 @@ class PydanticModelField(JSONField):
 
     def pre_save(self, model_instance, add):
         value = super().pre_save(model_instance, add)
-        self._value_to_pydantic_model(value)
+        # NULL is the column's own value when `null=True`, not a document.
+        if value is not None:
+            self._value_to_pydantic_model(value)
         return value
 
     def __init__(self, pydantic_model: type[BaseModel], *args, **kwargs):

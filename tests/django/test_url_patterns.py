@@ -29,3 +29,9 @@ def test_i18n_patterns_prefix():
         assert list(iter_regex_patterns(i18n_patterns(*_users))) == [
             (r"^en\/users\/(?P<pk>[0-9]+)\/\Z", "en/users/<int:pk>/")
         ]
+
+
+def test_already_escaped_slash_stays_escaped_once():
+    assert list(iter_regex_patterns([re_path(r"^a\/b/\\/c$", _view)])) == [
+        (r"^a\/b\/\\\/c$", r"^a\/b/\\/c$")
+    ]

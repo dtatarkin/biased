@@ -1,3 +1,4 @@
+import re
 from collections.abc import Iterable, Sequence
 from typing import Any
 
@@ -73,8 +74,18 @@ def _iter_route_patterns(
             raise RuntimeError(f"Unexpected url_pattern type: {type(url_pattern)}")  # noqa: TRY004
 
 
+# An escape sequence is one token, so a slash it already escapes is left alone.
+_ESCAPE_OR_SLASH = re.compile(r"\\.|/", re.DOTALL)
+
+
+def _escape_slashes(regex: str) -> str:
+    return _ESCAPE_OR_SLASH.sub(
+        lambda m: r"\/" if m.group() == "/" else m.group(), regex
+    )
+
+
 def _route_pattern_to_regex_pattern(route_pattern: _PrefixPattern) -> str:
-    return route_pattern.regex.pattern.removeprefix("^").replace("/", r"\/")
+    return _escape_slashes(route_pattern.regex.pattern.removeprefix("^"))
 
 
 def _route_patterns_to_regex_pattern(
