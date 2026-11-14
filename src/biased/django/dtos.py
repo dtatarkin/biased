@@ -1,6 +1,6 @@
 from typing import Any
 
-from biased.dtos.env_file_paths import EnvFilePathsSettings
+from biased.settings.env_file_paths import EnvFilePathsSettings
 
 
 class DjangoSettings(EnvFilePathsSettings):

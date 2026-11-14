@@ -2,7 +2,7 @@ import logging
 
 from structlog.stdlib import ProcessorFormatter
 
-from biased.dtos.logging import LogFormatter, LoggingParams
+from biased.dtos.logging_params import LogFormatter, LoggingParams
 from biased.logging.consts import HANDLER_NAME
 from biased.logging.dict_config import LoggingDictConfig, get_logging_dict_config
 

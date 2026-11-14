@@ -1,7 +1,15 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from biased.dtos.env_file_paths import EnvFilePathsSettings
-from biased.dtos.logging import LoggingParams
+from biased.dtos.logging_params import LoggingParams
+from biased.settings.env_file_paths import EnvFilePathsSettings
+
+# Shared by both classes below, so the two bindings cannot drift apart.
+_LOG_ENV = SettingsConfigDict(
+    env_prefix="LOG_",
+    env_file_encoding="utf-8",
+    env_nested_delimiter="__",
+    extra="ignore",
+)
 
 
 class LoggingConfig(LoggingParams, BaseSettings):
@@ -19,13 +27,7 @@ class LoggingConfig(LoggingParams, BaseSettings):
     so a single environment may carry knobs for several settings classes.
     """
 
-    model_config = SettingsConfigDict(
-        env_prefix="LOG_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_nested_delimiter="__",
-        extra="ignore",
-    )
+    model_config = SettingsConfigDict(**_LOG_ENV, env_file=".env")
 
 
 class LoggingSettings(LoggingParams, EnvFilePathsSettings):
@@ -40,6 +42,4 @@ class LoggingSettings(LoggingParams, EnvFilePathsSettings):
     ``LoggingParams`` fields, so the renderer configuration stays single-sourced.
     """
 
-    model_config = SettingsConfigDict(
-        extra="ignore", env_prefix="LOG_", env_nested_delimiter="__"
-    )
+    model_config = _LOG_ENV

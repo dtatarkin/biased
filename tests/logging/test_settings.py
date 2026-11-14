@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from biased.dtos.logging import LogFormatter
+from biased.dtos.logging_params import LogFormatter
 from biased.logging.settings import LoggingConfig
 
 

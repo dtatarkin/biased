@@ -3,3 +3,6 @@
 # as a re-export of `json_renderer.py` for existing consumers; a file-name hit
 # cannot be rewritten by the fixer, so it would fail every run until allowed here.
 renderrer = "renderrer"
+# pydantic-core's `*_ser_schema` builders: `ser` is pydantic's abbreviation for
+# "serialization", and the fixer would rewrite the call into a missing name.
+ser = "ser"

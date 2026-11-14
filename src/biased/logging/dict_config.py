@@ -4,7 +4,7 @@ from typing import cast
 import structlog
 from injector import inject
 
-from biased.dtos.logging import LogFormatter, LoggingParams
+from biased.dtos.logging_params import LogFormatter, LoggingParams
 from biased.logging.consts import HANDLER_NAME
 from biased.logging.processors import merge_data_payload
 from biased.logging.utils import structlog_json_serializer

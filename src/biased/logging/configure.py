@@ -1,6 +1,6 @@
 import logging.config
 
-from biased.dtos.logging import LoggingParams
+from biased.dtos.logging_params import LoggingParams
 from biased.logging.dict_config import get_logging_dict_config
 from biased.logging.settings import LoggingConfig
 

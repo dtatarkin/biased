@@ -6,7 +6,7 @@ from collections.abc import Callable
 
 import pytest
 
-from biased.dtos.logging import LogFormatter, LoggingParams
+from biased.dtos.logging_params import LogFormatter, LoggingParams
 from biased.logging.configure import configure_logging
 from biased.logging.consts import HANDLER_NAME
 from biased.logging.settings import LoggingConfig

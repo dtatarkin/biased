@@ -2,7 +2,7 @@ from pydantic import HttpUrl, SecretStr
 from pydantic_settings import SettingsConfigDict
 
 from biased.dtos.base import BaseDto
-from biased.dtos.env_file_paths import EnvFilePathsSettings
+from biased.settings.env_file_paths import EnvFilePathsSettings
 
 
 class TemporalClientParams(BaseDto):

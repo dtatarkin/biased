@@ -116,16 +116,23 @@ FlatJsonSerializableDict = dict[str, JsonPrimitiveTypes]
 
 def validate_log_level(v: int | str) -> int:
     if isinstance(v, str):
+        name = v.strip()
+        # An environment variable is always a string, so ``LOG_LEVEL=10`` must parse.
+        if name.isdigit():
+            return int(name)
         levels = getLevelNamesMapping()
         try:
-            return levels[v.upper()]
+            return levels[name.upper()]
         except KeyError as e:
             raise ValueError(
                 f'Invalid log level "{v}", valid values are: {", ".join(levels.keys())}'
             ) from e
-    if not isinstance(v, int):
+    # ``bool`` is an ``int`` subclass, and ``True`` is no log level.
+    if not isinstance(v, int) or isinstance(v, bool):
         # pydantic turns a ValueError into a ValidationError; a TypeError would escape it.
         raise ValueError(f'Invalid log level "{v}", value must be an integer or string')  # noqa: TRY004
+    if v < 0:
+        raise ValueError(f'Invalid log level "{v}", value must not be negative')
     return v
 
 
