@@ -6,9 +6,8 @@ from injector import inject
 
 from biased.dtos.logging_params import LogFormatter, LoggingParams
 from biased.logging.consts import HANDLER_NAME
-from biased.logging.processors import merge_data_payload
+from biased.logging.processors import add_async_task_info, merge_data_payload
 from biased.logging.utils import structlog_json_serializer
-from biased.structlog.processors import AsyncTaskInfoAdder
 
 
 def get_logging_dict_config(params: LoggingParams) -> dict:
@@ -47,7 +46,7 @@ def get_logging_dict_config(params: LoggingParams) -> dict:
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
         structlog.processors.TimeStamper(fmt="iso"),
-        AsyncTaskInfoAdder(),
+        add_async_task_info,
         structlog.processors.StackInfoRenderer(),
     )
 

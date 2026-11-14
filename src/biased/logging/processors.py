@@ -1,3 +1,4 @@
+from asyncio import current_task
 from collections.abc import Mapping
 
 from structlog.typing import EventDict, WrappedLogger
@@ -21,4 +22,23 @@ def merge_data_payload(
     del event_dict[DATA_KEY]
     for key, value in data.items():
         event_dict.setdefault(key, value)
+    return event_dict
+
+
+def add_async_task_info(
+    logger: WrappedLogger, method_name: str, event_dict: EventDict
+) -> EventDict:
+    """Add the name and ``id`` of the asyncio task that logged the event.
+
+    Nothing is added outside a task — with no running loop, or in a loop
+    callback that no task runs.
+    """
+    try:
+        task = current_task()
+    except RuntimeError:
+        return event_dict
+    if task is None:
+        return event_dict
+    event_dict["async_task_name"] = task.get_name()
+    event_dict["async_task"] = id(task)
     return event_dict
