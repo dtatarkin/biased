@@ -1,7 +1,10 @@
+import asyncio
 import io
 import json
 import logging
+import os
 import re
+import threading
 from collections.abc import Callable
 
 import pytest
@@ -23,6 +26,19 @@ _ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
 # What every escape sequence starts with: a rendering without it carries none.
 _ESC = "\x1b"
+
+
+def _rendered_keys(line: str) -> set[str]:
+    """The keys of an uncolored human line's ``key=value`` pairs; the
+    timestamp, level, event and logger columns carry no ``=``."""
+    return {token.partition("=")[0] for token in line.split() if "=" in token}
+
+
+async def _log_in_a_task(event: str) -> str:
+    task = asyncio.current_task()
+    assert task is not None
+    log.info(event)
+    return task.get_name()
 
 
 class TestApplied:
@@ -80,7 +96,46 @@ class TestRendering:
         assert "[warning" in line
         assert f"[{log.name}]" in line
         assert "pane_id=7" in line and "label=build" in line
-        assert "func_name=test_human_line_carries_payload_and_enrichment" in line
+
+    def test_human_line_carries_only_the_call_site_keys(
+        self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        configure_logging(
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=False)
+        )
+
+        log.info("sheet_read", extra={"data": {"cells": 152, "sheets": 1}})
+
+        (line,) = capsys.readouterr().err.splitlines()
+        assert _rendered_keys(line) == {"cells", "sheets"}
+        for key in ("process", "thread", "func_name", "filename", "lineno"):
+            assert f"{key}=" not in line
+
+    def test_human_line_logged_in_a_task_carries_no_task_keys(
+        self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        # Above DEBUG, where the event loop logs which selector it chose.
+        configure_logging(
+            LoggingParams(level="INFO", formatter=LogFormatter.human, colors=False)
+        )
+
+        asyncio.run(_log_in_a_task("sheet_read"))
+
+        (line,) = capsys.readouterr().err.splitlines()
+        assert "sheet_read" in line
+        assert "async_task" not in line
+
+    def test_human_line_keeps_a_call_site_key_named_like_a_callsite_one(
+        self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        configure_logging(
+            LoggingParams(level="DEBUG", formatter=LogFormatter.human, colors=False)
+        )
+
+        log.info("charge_posted", extra={"data": {"module": "billing"}})
+
+        (line,) = capsys.readouterr().err.splitlines()
+        assert "module=billing" in line
 
     def test_json_record_is_one_flat_object(
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
@@ -96,10 +151,33 @@ class TestRendering:
         assert record["level"] == "info"
         assert record["logger"] == log.name
         assert "data" not in record
-        assert {"timestamp", "filename", "module", "func_name", "lineno"} <= (
-            record.keys()
-        )
+        assert {
+            "timestamp",
+            "filename",
+            "module",
+            "func_name",
+            "lineno",
+            "process",
+            "process_name",
+            "thread",
+            "thread_name",
+        } <= record.keys()
         assert record["module"] == "test_configure"
+        assert record["func_name"] == "test_json_record_is_one_flat_object"
+        assert record["process"] == os.getpid()
+        assert record["thread"] == threading.get_ident()
+
+    def test_json_record_logged_in_a_task_carries_the_task_keys(
+        self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        # Above DEBUG, where the event loop logs which selector it chose.
+        configure_logging(LoggingParams(level="INFO", formatter=LogFormatter.json))
+
+        task_name = asyncio.run(_log_in_a_task("sheet_read"))
+
+        record = json.loads(capsys.readouterr().err)
+        assert record["async_task_name"] == task_name
+        assert "async_task" in record
 
     def test_json_exception_is_rendered_as_a_traceback(
         self, pristine_root_logger: logging.Logger, capsys: pytest.CaptureFixture[str]

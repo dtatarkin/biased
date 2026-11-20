@@ -23,24 +23,23 @@ def get_logging_dict_config(params: LoggingParams) -> dict[str, Any]:
     before this configuration is applied.
     """
     # Runs on stdlib records only, while the ``LogRecord`` is still attached:
-    # the ``extra=`` fields are copied in, the ``data`` payload is lifted, and
-    # the callsite is read from the record itself rather than from the frame
-    # that formats it.
-    foreign_pre_chain = (
+    # the ``extra=`` fields are copied in and the ``data`` payload is lifted.
+    payload_pre_chain = (
         structlog.stdlib.ExtraAdder(),
         merge_data_payload,
-        structlog.processors.CallsiteParameterAdder(
-            parameters=(
-                structlog.processors.CallsiteParameter.FILENAME,
-                structlog.processors.CallsiteParameter.MODULE,
-                structlog.processors.CallsiteParameter.FUNC_NAME,
-                structlog.processors.CallsiteParameter.LINENO,
-                structlog.processors.CallsiteParameter.PROCESS,
-                structlog.processors.CallsiteParameter.PROCESS_NAME,
-                structlog.processors.CallsiteParameter.THREAD,
-                structlog.processors.CallsiteParameter.THREAD_NAME,
-            )
-        ),
+    )
+    # Read from the record itself rather than from the frame that formats it.
+    callsite_adder = structlog.processors.CallsiteParameterAdder(
+        parameters=(
+            structlog.processors.CallsiteParameter.FILENAME,
+            structlog.processors.CallsiteParameter.MODULE,
+            structlog.processors.CallsiteParameter.FUNC_NAME,
+            structlog.processors.CallsiteParameter.LINENO,
+            structlog.processors.CallsiteParameter.PROCESS,
+            structlog.processors.CallsiteParameter.PROCESS_NAME,
+            structlog.processors.CallsiteParameter.THREAD,
+            structlog.processors.CallsiteParameter.THREAD_NAME,
+        )
     )
 
     # Shared by both renderers; the processor-meta keys are dropped last, right
@@ -51,9 +50,8 @@ def get_logging_dict_config(params: LoggingParams) -> dict[str, Any]:
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
         add_record_timestamp,
-        add_async_task_info,
-        structlog.processors.StackInfoRenderer(),
     )
+    stack_info = structlog.processors.StackInfoRenderer()
 
     colors = params.colors if params.colors is not None else sys.stderr.isatty()
 
@@ -63,9 +61,11 @@ def get_logging_dict_config(params: LoggingParams) -> dict[str, Any]:
         "formatters": {
             LogFormatter.json.value: {
                 "()": structlog.stdlib.ProcessorFormatter,
-                "foreign_pre_chain": foreign_pre_chain,
+                "foreign_pre_chain": (*payload_pre_chain, callsite_adder),
                 "processors": (
                     *enrichment,
+                    add_async_task_info,
+                    stack_info,
                     # A traceback string serialises; an ``exc_info`` tuple
                     # does not.
                     structlog.processors.format_exc_info,
@@ -77,9 +77,16 @@ def get_logging_dict_config(params: LoggingParams) -> dict[str, Any]:
             },
             LogFormatter.human.value: {
                 "()": structlog.stdlib.ProcessorFormatter,
-                "foreign_pre_chain": foreign_pre_chain,
+                # No callsite, process, thread or asyncio-task keys: on every
+                # line they bury the event's own context, and the logger name
+                # and the constant event name already lead a reader to the
+                # call site. The JSON record keeps them for the log store.
+                # Never added rather than removed afterwards, so a call
+                # site's own key that shares one of their names still shows.
+                "foreign_pre_chain": payload_pre_chain,
                 "processors": (
                     *enrichment,
+                    stack_info,
                     structlog.stdlib.ProcessorFormatter.remove_processors_meta,
                     # Renders ``exc_info`` itself. The plain formatter, not
                     # the Rich one structlog picks when Rich is importable:
